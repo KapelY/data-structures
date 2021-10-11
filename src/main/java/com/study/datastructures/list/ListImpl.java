@@ -6,8 +6,8 @@ public class ListImpl implements List {
     private Object[] array;
     private int size = 0;
 
-    public ListImpl(Object[] array) {
-        this.array = array;
+    public ListImpl(int capacity) {
+        this.array = new Object[capacity];
     }
 
     @Override
@@ -18,7 +18,8 @@ public class ListImpl implements List {
 
     @Override
     public void add(Object value, int index) {
-        for (int i = array.length -1; i > index + 1; i--) {
+        if (index > size || index < 0) throw new IndexOutOfBoundsException();
+        for (int i = array.length - 1; i > index + 1; i--) {
             array[i] = array[i - 1];
         }
         array[index] = value;
@@ -27,7 +28,8 @@ public class ListImpl implements List {
 
     @Override
     public Object remove(int index) {
-        for (int i = index; i < array.length -1; i++) {
+        if (index > size - 1 || index < 0) throw new IndexOutOfBoundsException();
+        for (int i = index; i < array.length - 1; i++) {
             array[i] = array[i + 1];
         }
         array[array.length - 1] = null;
@@ -37,6 +39,7 @@ public class ListImpl implements List {
 
     @Override
     public Object get(int index) {
+        if (index > size || index < 0) throw new IndexOutOfBoundsException();
         return array[index];
     }
 
@@ -63,8 +66,8 @@ public class ListImpl implements List {
     @Override
     public boolean contains(Object value) {
         boolean result = false;
-        for(Object i : array){
-            if(i == value){
+        for (Object i : array) {
+            if (i == value) {
                 result = true;
                 break;
             }
@@ -94,5 +97,16 @@ public class ListImpl implements List {
             }
         }
         return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < size - 1; i++) {
+            sb.append(array[i]).append(", ");
+        }
+        sb.append(array[size - 1]).append("]");
+        return sb.toString();
     }
 }
