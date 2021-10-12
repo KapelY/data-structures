@@ -1,7 +1,9 @@
 package com.study.datastructures.list;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Objects;
 import java.util.StringJoiner;
 
 public class LinkedList implements List {
@@ -24,9 +26,7 @@ public class LinkedList implements List {
 
     @Override
     public void add(Object value, int index) {
-        if (index > size) {
-            throw new IndexOutOfBoundsException(EXCEPTION_ADD_VALUE);
-        }
+        addCheckRange(index);
 
         if (head == null) {
             tail = head = new Node(value, null, null);
@@ -67,35 +67,30 @@ public class LinkedList implements List {
 
     @Override
     public Object remove(int index) {
-        if (index > size) {
-            throw new IndexOutOfBoundsException();
-        }
+        checkRange(index, EXCEPTION_REMOVE_VALUE);
         size -= 1;
 
-        Object removeNode;
-        if (index == size) {
-            removeNode = tail.value;
-            tail.prev.next = null;
-            tail = tail.prev;
-
-        } else {
-            Node currentNode = head;
-
-            for (int i = 0; i < index; i++) {
-                currentNode = currentNode.getNext();
+        Node removeNode = findNode(index);
+        if (removeNode == head) {
+            head = head.next;
+            if (head != null) {
+                head.prev = null;
             }
-            currentNode.prev.next = currentNode.next;
-            currentNode.next.prev = currentNode.prev;
-            removeNode = currentNode.value;
         }
-        return removeNode;
+
+        if (removeNode.prev != null) {
+            removeNode.prev.next = removeNode.next;
+        }
+        if (removeNode.next != null) {
+            removeNode.next.prev = removeNode.prev;
+        }
+
+        return removeNode.value;
     }
 
     @Override
     public Object get(int index) {
-        if (index > size) {
-            throw new IndexOutOfBoundsException();
-        }
+        checkRange(index, EXCEPTION_GET_VALUE);
 
         Node currentNode = findNode(index);
         return currentNode.value;
@@ -103,7 +98,12 @@ public class LinkedList implements List {
 
     @Override
     public Object set(Object value, int index) {
-        return null;
+        checkRange(index, EXCEPTION_SET_VALUE);
+
+        Node foundNode = findNode(index);
+        Object oldValue = foundNode.value;
+        foundNode.value = value;
+        return oldValue;
     }
 
     @Override
@@ -124,17 +124,37 @@ public class LinkedList implements List {
 
     @Override
     public boolean contains(Object value) {
+        for (Node currentNode = head; currentNode != null; ) {
+            if (Objects.equals(value, currentNode.value)) {
+                return true;
+            }
+            currentNode = currentNode.next;
+        }
         return false;
     }
 
     @Override
     public int indexOf(Object value) {
-        return 0;
+        int index = 0;
+        for (Node currentNode = head; currentNode != null; index++) {
+            if (Objects.equals(value, currentNode.value)) {
+                return index;
+            }
+            currentNode = currentNode.next;
+        }
+        return -1;
     }
 
     @Override
     public int lastIndexOf(Object value) {
-        return 0;
+        int index = size - 1;
+        for (Node currentNode = tail; currentNode != null; index--) {
+            if (Objects.equals(value, currentNode.value)) {
+                return index;
+            }
+            currentNode = currentNode.prev;
+        }
+        return -1;
     }
 
     @Override
@@ -160,19 +180,23 @@ public class LinkedList implements List {
         return currentNode;
     }
 
+    private void checkRange(int index, String message) {
+        if (index >= size || index < 0) {
+            throw new IndexOutOfBoundsException(message);
+        }
+    }
+
+    private void addCheckRange(int index) {
+        if (index > size || index < 0) {
+            throw new IndexOutOfBoundsException(EXCEPTION_ADD_VALUE);
+        }
+    }
+
     @Data
+    @AllArgsConstructor
     private class Node {
         private Object value;
         private Node prev;
         private Node next;
-
-        public Node() {
-        }
-
-        public Node(Object value, Node prev, Node next) {
-            this.value = value;
-            this.prev = prev;
-            this.next = next;
-        }
     }
 }

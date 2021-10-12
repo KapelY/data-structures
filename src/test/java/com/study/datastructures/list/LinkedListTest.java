@@ -55,32 +55,41 @@ class LinkedListTest {
     @Test
     @DisplayName("When call 'add(Object value)' then size increase")
     void addAndSize() {
-        assertEquals(3, linkedList.size());
+        assertEquals(0, linkedList.size());
         linkedList.add("A");
-        assertEquals(4, linkedList.size());
-    }
-
-    @Test
-    @DisplayName("When call 'add(Object value, int index)' then size increase")
-    void testAdd() {
-        linkedList.add("A", 0);
-        assertEquals(4, linkedList.size());
+        assertEquals(1, linkedList.size());
     }
 
     @Test
     void remove() {
+        linkedList.add("A");
         assertEquals("A", linkedList.remove(0));
-        assertEquals(2, linkedList.size());
+        assertEquals(0, linkedList.size());
+        linkedList.add("B");
+        linkedList.add("C");
+        assertEquals("C", linkedList.remove(1));
+        assertEquals(1, linkedList.size());
+        assertEquals("B", linkedList.remove(0));
     }
 
     @Test
     void get() {
-        assertEquals("A", linkedList.get(0));
+        linkedList.add("1");
+        assertEquals("1", linkedList.get(0));
+        linkedList.add("2");
+        linkedList.add("3");
+        assertEquals("2", linkedList.get(1));
+        assertEquals("3", linkedList.get(2));
+
     }
 
     @Test
     void set() {
-        assertEquals("C", linkedList.set("D", 2));
+        linkedList.add("1");
+        assertEquals("1", linkedList.set(2, 0));
+        linkedList.add("3");
+        linkedList.add("4");
+        assertEquals("4", linkedList.set(0, 2));
     }
 
     @Test
@@ -91,12 +100,17 @@ class LinkedListTest {
 
     @Test
     void size() {
-        assertEquals(3, linkedList.size());
+        assertEquals(0, linkedList.size());
+        linkedList.add("100");
+        assertEquals(1, linkedList.size());
     }
 
     @Test
     void isNotEmpty() {
+        linkedList.add("#");
         assertFalse(linkedList.isEmpty());
+        linkedList.clear();
+        assertEquals(0, linkedList.size());
     }
 
     @Test
@@ -107,8 +121,10 @@ class LinkedListTest {
 
     @Test
     void contains() {
+        linkedList.add("A");
         assertTrue(linkedList.contains("A"));
-        assertTrue(linkedList.contains("B"));
+        assertFalse(linkedList.contains("B"));
+        linkedList.add("C");
         assertTrue(linkedList.contains("C"));
         assertFalse(linkedList.contains("D"));
     }
@@ -122,11 +138,18 @@ class LinkedListTest {
     @Test
     void lastIndexOf() {
         linkedList.add("A");
-        assertEquals(3, linkedList.lastIndexOf("A"));
+        linkedList.add("A");
+        linkedList.add("A");
+        linkedList.add("A");
+        linkedList.add("A");
+        assertEquals(4, linkedList.lastIndexOf("A"));
     }
 
     @Test
     void testToString() {
+        linkedList.add("A");
+        linkedList.add("B");
+        linkedList.add("C");
         assertEquals("[A, B, C]", linkedList.toString());
     }
 
