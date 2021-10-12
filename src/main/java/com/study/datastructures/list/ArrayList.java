@@ -11,7 +11,7 @@ public class ArrayList implements List {
     public static final String EXCEPTION_GET_VALUE = "We can get value by index between [0, size - 1]";
     private static final int DEFAULT_CAPACITY = 10;
     private Object[] array;
-    private int size = 0;
+    private int size;
 
     public ArrayList() {
         this(DEFAULT_CAPACITY);
