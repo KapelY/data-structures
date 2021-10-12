@@ -1,63 +1,103 @@
 package com.study.datastructures.list;
 
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
-import java.util.Objects;
+import java.util.StringJoiner;
 
-public class LinkedList implements List{
+public class LinkedList implements List {
+    public static final String EXCEPTION_SET_VALUE = "We can set value by index between [0, size - 1]";
+    public static final String EXCEPTION_ADD_VALUE = "We can add value by index between [0, size - 1]";
+    public static final String EXCEPTION_REMOVE_VALUE = "We can remove value by index between [0, size - 1]";
+    public static final String EXCEPTION_GET_VALUE = "We can get value by index between [0, size - 1]";
 
     private Node head;
     private Node tail;
     private int size;
 
-//    public LinkedList() {
-//        head = tail = new Node();
-//    }
+    public LinkedList() {
+    }
 
     @Override
     public void add(Object value) {
-        if (size == 0) {
-            tail = head = new Node(value);
-            head.next = tail;
-            tail.prev = head;
-        } else {
-            Node currentNode = new Node(value);
-            currentNode.prev = tail;
-            tail.next = currentNode;
-            tail = currentNode;
-        }
-        size++;
+        add(value, size);
     }
 
     @Override
     public void add(Object value, int index) {
         if (index > size) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException(EXCEPTION_ADD_VALUE);
         }
 
-        Node currentNode = head;
-        for (int i = 0; i < index; i++) {
-            currentNode = currentNode.next;
+        if (head == null) {
+            tail = head = new Node(value, null, null);
+            size++;
+            return;
+        }
+
+        if (head == tail) {
+            tail = new Node(value, head, null);
+            head.next = tail;
+            size++;
+            return;
+        }
+
+        if (index == size) {
+            Node newNode = new Node(value, tail, null);
+            tail.next = newNode;
+            tail = newNode;
+            size++;
+            return;
+        }
+
+        Node foundNode = findNode(index);
+        if (foundNode == head) {
+            head = new Node(value, null, foundNode);
+            foundNode.prev = head;
+            size++;
+            return;
+        }
+
+        if (foundNode.prev != null) {
+            Node newNode = new Node(value, foundNode.prev, foundNode);
+            foundNode.prev.next = newNode;
+            foundNode.prev = newNode;
         }
         size++;
     }
 
     @Override
     public Object remove(int index) {
-        return null;
+        if (index > size) {
+            throw new IndexOutOfBoundsException();
+        }
+        size -= 1;
+
+        Object removeNode;
+        if (index == size) {
+            removeNode = tail.value;
+            tail.prev.next = null;
+            tail = tail.prev;
+
+        } else {
+            Node currentNode = head;
+
+            for (int i = 0; i < index; i++) {
+                currentNode = currentNode.getNext();
+            }
+            currentNode.prev.next = currentNode.next;
+            currentNode.next.prev = currentNode.prev;
+            removeNode = currentNode.value;
+        }
+        return removeNode;
     }
 
     @Override
     public Object get(int index) {
-        if (index > size ) {
+        if (index > size) {
             throw new IndexOutOfBoundsException();
         }
 
-        Node currentNode = head;
-        for (int i = 0; i < index; i++) {
-            currentNode = currentNode.next;
-        }
+        Node currentNode = findNode(index);
         return currentNode.value;
     }
 
@@ -68,18 +108,18 @@ public class LinkedList implements List{
 
     @Override
     public void clear() {
-        head = tail = new Node();
+        head = tail = null;
         size = 0;
     }
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return size == 0;
     }
 
     @Override
@@ -97,6 +137,28 @@ public class LinkedList implements List{
         return 0;
     }
 
+    @Override
+    public String toString() {
+        if (head != null) {
+            StringJoiner stringJoiner = new StringJoiner(", ", "[", "]");
+            Node currentNode = head;
+            while (currentNode.next != null) {
+                stringJoiner.add(String.valueOf(currentNode.value));
+                currentNode = currentNode.next;
+            }
+            stringJoiner.add(String.valueOf(currentNode.value));
+            return stringJoiner.toString();
+        }
+        return "";
+    }
+
+    private Node findNode(int index) {
+        Node currentNode = head;
+        for (int i = 0; i < index; i++) {
+            currentNode = currentNode.next;
+        }
+        return currentNode;
+    }
 
     @Data
     private class Node {
@@ -107,8 +169,10 @@ public class LinkedList implements List{
         public Node() {
         }
 
-        public Node(Object value) {
+        public Node(Object value, Node prev, Node next) {
             this.value = value;
+            this.prev = prev;
+            this.next = next;
         }
     }
 }

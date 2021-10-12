@@ -8,113 +8,113 @@ import static com.study.datastructures.list.ArrayList.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ArrayListTest {
-    private final List defaultArrayList = new ArrayList();
+    private final List arrayList = new ArrayList();
 
     @BeforeEach
     void setUp() {
-        defaultArrayList.clear();
-        defaultArrayList.add("A");
-        defaultArrayList.add("B");
-        defaultArrayList.add("C");
+        arrayList.clear();
+        arrayList.add("A");
+        arrayList.add("B");
+        arrayList.add("C");
     }
 
 
     @Test
     @DisplayName("When call 'add(Object value)' then size increase")
     void add() {
-        assertEquals(3, defaultArrayList.size());
-        defaultArrayList.add("A");
-        assertEquals(4, defaultArrayList.size());
+        assertEquals(3, arrayList.size());
+        arrayList.add("A");
+        assertEquals(4, arrayList.size());
     }
 
     @Test
     @DisplayName("When call 'add(Object value, int index)' then size increase")
     void testAdd() {
-        defaultArrayList.add("A", 0);
-        assertEquals(4, defaultArrayList.size());
+        arrayList.add("A", 0);
+        assertEquals(4, arrayList.size());
     }
 
     @Test
     void remove() {
-        assertEquals("A", defaultArrayList.remove(0));
-        assertEquals(2, defaultArrayList.size());
+        assertEquals("A", arrayList.remove(0));
+        assertEquals(2, arrayList.size());
     }
 
     @Test
     void get() {
-        assertEquals("A", defaultArrayList.get(0));
+        assertEquals("A", arrayList.get(0));
     }
 
     @Test
     void set() {
-        assertEquals("C", defaultArrayList.set("D", 2));
+        assertEquals("C", arrayList.set("D", 2));
     }
 
     @Test
     void clear() {
-        defaultArrayList.clear();
-        assertEquals(0, defaultArrayList.size());
+        arrayList.clear();
+        assertEquals(0, arrayList.size());
     }
 
     @Test
     void size() {
-        assertEquals(3, defaultArrayList.size());
+        assertEquals(3, arrayList.size());
     }
 
     @Test
     void isNotEmpty() {
-        assertFalse(defaultArrayList.isEmpty());
+        assertFalse(arrayList.isEmpty());
     }
 
     @Test
     void isNEmpty() {
-        defaultArrayList.clear();
-        assertTrue(defaultArrayList.isEmpty());
+        arrayList.clear();
+        assertTrue(arrayList.isEmpty());
     }
 
     @Test
     void contains() {
-        assertTrue(defaultArrayList.contains("A"));
-        assertTrue(defaultArrayList.contains("B"));
-        assertTrue(defaultArrayList.contains("C"));
-        assertFalse(defaultArrayList.contains("D"));
+        assertTrue(arrayList.contains("A"));
+        assertTrue(arrayList.contains("B"));
+        assertTrue(arrayList.contains("C"));
+        assertFalse(arrayList.contains("D"));
     }
 
     @Test
     void indexOf() {
-        defaultArrayList.add("A");
-        assertEquals(0, defaultArrayList.indexOf("A"));
+        arrayList.add("A");
+        assertEquals(0, arrayList.indexOf("A"));
     }
 
     @Test
     void lastIndexOf() {
-        defaultArrayList.add("A");
-        assertEquals(3, defaultArrayList.lastIndexOf("A"));
+        arrayList.add("A");
+        assertEquals(3, arrayList.lastIndexOf("A"));
     }
 
     @Test
     void testToString() {
-        assertEquals("[A, B, C]", defaultArrayList.toString());
+        assertEquals("[A, B, C]", arrayList.toString());
     }
 
     @Test
     @DisplayName("When the size of the array becomes more than 10 the array capacity increase")
     void whenSizeMoreThan10() {
-        defaultArrayList.clear();
+        arrayList.clear();
         for (int i = 0; i < 11; i++) {
-            defaultArrayList.add(i);
+            arrayList.add(i);
         }
 
-        assertEquals(11, defaultArrayList.size());
+        assertEquals(11, arrayList.size());
     }
 
     @Test
     @DisplayName("When remove out of range, then check range throws IndexOutOfBoundsException()")
     void removeCheckRange() {
-        defaultArrayList.clear();
+        arrayList.clear();
         Exception exception = assertThrows(
                 IndexOutOfBoundsException.class,
-                () -> defaultArrayList.remove(0));
+                () -> arrayList.remove(0));
 
         assertTrue(exception.getMessage().contains(EXCEPTION_REMOVE_VALUE));
     }
@@ -122,10 +122,10 @@ class ArrayListTest {
     @Test
     @DisplayName("When add with index out of range, then check range throws IndexOutOfBoundsException()")
     void addWithIndexCheckRange() {
-        defaultArrayList.clear();
+        arrayList.clear();
         Exception exception = assertThrows(
                 IndexOutOfBoundsException.class,
-                () -> defaultArrayList.add("A", 1));
+                () -> arrayList.add("A", 1));
 
         assertTrue(exception.getMessage().contains(EXCEPTION_ADD_VALUE));
     }
@@ -133,11 +133,22 @@ class ArrayListTest {
     @Test
     @DisplayName("When get with index out of range, then check range throws IndexOutOfBoundsException()")
     void getCheckRange() {
-        defaultArrayList.clear();
+        arrayList.clear();
         Exception exception = assertThrows(
                 IndexOutOfBoundsException.class,
-                () -> defaultArrayList.get(0));
+                () -> arrayList.get(0));
 
         assertTrue(exception.getMessage().contains(EXCEPTION_GET_VALUE));
+    }
+
+    @Test
+    @DisplayName("When get with index out of range, then check range throws IndexOutOfBoundsException()")
+    void setCheckRange() {
+        arrayList.clear();
+        Exception exception = assertThrows(
+                IndexOutOfBoundsException.class,
+                () -> arrayList.set(0, 0));
+
+        assertTrue(exception.getMessage().contains(EXCEPTION_SET_VALUE));
     }
 }
