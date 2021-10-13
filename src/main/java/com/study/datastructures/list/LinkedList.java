@@ -124,13 +124,7 @@ public class LinkedList implements List {
 
     @Override
     public boolean contains(Object value) {
-        for (Node currentNode = head; currentNode != null; ) {
-            if (Objects.equals(value, currentNode.value)) {
-                return true;
-            }
-            currentNode = currentNode.next;
-        }
-        return false;
+        return indexOf(value) != -1;
     }
 
     @Override
