@@ -188,7 +188,7 @@ public class LinkedList implements List {
 
     @Data
     @AllArgsConstructor
-    private class Node {
+    private static class Node {
         private Object value;
         private Node prev;
         private Node next;
