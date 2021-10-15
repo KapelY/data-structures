@@ -1,7 +1,9 @@
 package com.study.datastructures.list;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 
 public class ArrayList implements List {
@@ -139,5 +141,15 @@ public class ArrayList implements List {
         if (index > size || index < 0) {
             throw new IndexOutOfBoundsException(EXCEPTION_ADD_VALUE);
         }
+    }
+
+    @Override
+    public Iterator iterator() {
+        return null;
+    }
+
+    @Override
+    public void forEach(Consumer action) {
+        List.super.forEach(action);
     }
 }

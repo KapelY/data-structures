@@ -3,8 +3,10 @@ package com.study.datastructures.list;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 public class LinkedList implements List {
     public static final String EXCEPTION_SET_VALUE = "We can set value by index between [0, size - 1]";
@@ -184,6 +186,16 @@ public class LinkedList implements List {
         if (index > size || index < 0) {
             throw new IndexOutOfBoundsException(EXCEPTION_ADD_VALUE);
         }
+    }
+
+    @Override
+    public Iterator iterator() {
+        return null;
+    }
+
+    @Override
+    public void forEach(Consumer action) {
+        List.super.forEach(action);
     }
 
     @Data

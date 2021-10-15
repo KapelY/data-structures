@@ -5,10 +5,11 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.StringJoiner;
 
 public class HashMap implements Map {
-    private static final int DEFAULT_CAPACITY = 10;
+    private static final int DEFAULT_CAPACITY = 5;
 
     private List[] buckets;
     private int size;
@@ -63,9 +64,21 @@ public class HashMap implements Map {
     @Override
     public Object remove(Object key) {
         Object oldValue = null;
-        final List bucket = buckets[findBucketIndex(key)];
-        if (bucket != null && findEntryIndex(bucket, key) != null) {
-            findEntryIndex(bucket, key);
+        var bucketIndex = findBucketIndex(key);
+        List<Entry> list = buckets[bucketIndex];
+        if (list != null && findEntryIndex(list, key) != null) {
+            ListIterator iterator = list.listIterator();
+            while (iterator.hasNext()){
+                Entry entry = ((Entry)iterator.next());
+                if (entry.key == key) {
+                    oldValue = entry.value;
+                    iterator.remove();
+                    size--;
+                }
+            }
+            if (list.isEmpty()) {
+                buckets[bucketIndex] = null;
+            }
         }
         return oldValue;
     }
@@ -82,6 +95,10 @@ public class HashMap implements Map {
             stringJoiner.add(String.valueOf(buckets[i]));
         }
         return stringJoiner.toString();
+    }
+
+    protected int capacity() {
+        return buckets.length;
     }
 
     private Object findEntryValue(List<Entry> list, Object key) {
@@ -105,20 +122,8 @@ public class HashMap implements Map {
     }
 
     private int findBucketIndex(Object key) {
-        System.out.println("length = " + buckets.length + "  " + key.hashCode() % buckets.length);
         return key.hashCode() % buckets.length;
     }
-
-//    private Integer findIndexByValue(List<Entry> bucket, Object value) {
-//        Entry entry;
-//        for (int i = 0; i < bucket.size(); i++) {
-//             entry =  bucket.get(i);
-//            if (entry.value.equals(value)) {
-//                return i;
-//            }
-//        }
-//        return null;
-//    }
 
     @Data
     @AllArgsConstructor

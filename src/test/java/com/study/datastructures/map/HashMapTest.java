@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HashMapTest {
     private Map map = new HashMap();
@@ -29,18 +29,16 @@ class HashMapTest {
         map.put("104", "collision#1"); // #1
         map.put("200", "collision#2"); // #2
         map.put("101", "collision#2"); // #2
-        System.out.println(map);
         assertEquals(4, map.size());
     }
 
     @Test
     @DisplayName("When call 'get(key)' right after 'put(key, value)', then correct value should return")
     void get() {
-        assertEquals(true,map.put("1", "11").equals("11"));
+        assertEquals(true, map.put("1", "11").equals("11"));
         map.put("2", "12");
         map.put("3", "13");
         assertEquals(true, map.put("4", "14").equals("14"));
-        System.out.println(map);
         assertEquals("11", map.get("1"));
         assertEquals("14", map.get("4"));
     }
@@ -70,11 +68,33 @@ class HashMapTest {
     }
 
     @Test
+    @DisplayName("When call 'remove(key)' on the last entry in a bucket, then bucket should be null(not empty list)")
     void remove() {
         map.put("1", "11");
         map.put("2", "12");
         assertEquals(2, map.size());
-        map.remove("2");
+        assertEquals(
+                "[[HashMap.Entry(key=2, value=12)], " +
+                        "null, " +
+                        "null, " +
+                        "null, " +
+                        "[HashMap.Entry(key=1, value=11)]]",
+                map.toString());
+        assertEquals("12", map.remove("2"));
         assertEquals(1, map.size());
+        assertEquals(
+                "[null, " +
+                        "null, " +
+                        "null, " +
+                        "null, " +
+                        "[HashMap.Entry(key=1, value=11)]]",
+                map.toString());
+    }
+
+    @Test
+    @DisplayName("When create HashMap with custom bucket size, then it should be created")
+    void whenCreateHashMapWithCustomBucketSizeThenItShouldBeCreated() {
+        HashMap customMapSize100 = new HashMap(100);
+        assertEquals(100, customMapSize100.capacity());
     }
 }
