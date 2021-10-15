@@ -5,34 +5,49 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.StringJoiner;
 
 public class HashMap implements Map {
     private static final int DEFAULT_CAPACITY = 10;
 
-    private ArrayList[] buckets;
+    private List[] buckets;
     private int size;
 
     public HashMap() {
-        buckets = new ArrayList[DEFAULT_CAPACITY];
+        this(DEFAULT_CAPACITY);
+    }
+
+    public HashMap(int capacity) {
+        buckets = new ArrayList[capacity];
     }
 
     @Override
     public Object put(Object key, Object value) {
-        var list = buckets[findBucket(key)];
-        if (list == null) {
-            list = new ArrayList<>();
+        var bucketIndex = findBucketIndex(key);
+        if (buckets[bucketIndex] == null) {
+            buckets[bucketIndex] = new ArrayList<Entry>();
+            buckets[bucketIndex].add(new Entry(key, value));
             size++;
+        } else {
+            var entryIndex = findEntryIndex(buckets[bucketIndex], key);
+            if (entryIndex != null) {
+                buckets[bucketIndex].set(entryIndex, new Entry(key, value));
+            } else {
+                buckets[bucketIndex].add(new Entry(key, value));
+                size++;
+            }
         }
-        list.add(new Entry(key, value));
         return value;
     }
 
     @Override
     public Object get(Object key) {
-        var bucket = buckets[findBucket(key)];
-        findEntry(bucket, key);
-        return findEntry(bucket, key);
+        var bucketIndex = findBucketIndex(key);
+        Object result = null;
+        if (buckets[bucketIndex] != null) {
+            result = findEntryValue(buckets[bucketIndex], key);
+        }
+        return result;
     }
 
     @Override
@@ -42,15 +57,17 @@ public class HashMap implements Map {
 
     @Override
     public boolean containsKey(Object key) {
-        return buckets[findBucket(key)] != null;
+        return buckets[findBucketIndex(key)] != null;
     }
 
     @Override
     public Object remove(Object key) {
-        if (buckets[findBucket(key)] != null) {
-
+        Object oldValue = null;
+        final List bucket = buckets[findBucketIndex(key)];
+        if (bucket != null && findEntryIndex(bucket, key) != null) {
+            findEntryIndex(bucket, key);
         }
-        return null;
+        return oldValue;
     }
 
     @Override
@@ -58,18 +75,50 @@ public class HashMap implements Map {
         buckets = new ArrayList[DEFAULT_CAPACITY];
     }
 
-    private Object findEntry(List<Entry> list, Object key) {
+    @Override
+    public String toString() {
+        StringJoiner stringJoiner = new StringJoiner(", ", "[", "]");
+        for (int i = 0; i < buckets.length; i++) {
+            stringJoiner.add(String.valueOf(buckets[i]));
+        }
+        return stringJoiner.toString();
+    }
+
+    private Object findEntryValue(List<Entry> list, Object key) {
         for (Entry entry : list) {
-            if (entry.key == key) {
+            if (entry != null && entry.key == key) {
                 return entry.value;
             }
         }
         return null;
     }
 
-    private int findBucket(Object key) {
+    private Integer findEntryIndex(List<Entry> list, Object key) {
+        Entry entry;
+        for (int i = 0; i < list.size(); i++) {
+            entry = list.get(i);
+            if (entry != null && entry.key == key) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    private int findBucketIndex(Object key) {
+        System.out.println("length = " + buckets.length + "  " + key.hashCode() % buckets.length);
         return key.hashCode() % buckets.length;
     }
+
+//    private Integer findIndexByValue(List<Entry> bucket, Object value) {
+//        Entry entry;
+//        for (int i = 0; i < bucket.size(); i++) {
+//             entry =  bucket.get(i);
+//            if (entry.value.equals(value)) {
+//                return i;
+//            }
+//        }
+//        return null;
+//    }
 
     @Data
     @AllArgsConstructor

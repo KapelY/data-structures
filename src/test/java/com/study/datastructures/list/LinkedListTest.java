@@ -18,15 +18,15 @@ class LinkedListTest {
     @Test
     @DisplayName("When call clear(), then it should be cleaned")
     void whenCallClearThenItShouldBeCleaned() {
-         assertEquals(0, linkedList.size());
-         linkedList.add("1");
-         assertEquals(1, linkedList.size());
-         clear();
+        assertEquals(0, linkedList.size());
+        linkedList.add("1");
+        assertEquals(1, linkedList.size());
+        clear();
         assertEquals(0, linkedList.size());
     }
 
     @Test
-    @DisplayName("When call 'add(Object value)' then size increase")
+    @DisplayName("When call 'add(Object value)' then size increases")
     void add() {
         linkedList.add("A");
         linkedList.add("B");
@@ -40,20 +40,20 @@ class LinkedListTest {
     @Test
     @DisplayName("When call 'add(Object value, int index)' then correct insert")
     void addByIndex() {
-        linkedList.add("A",0);
-        linkedList.add("B",1);
-        linkedList.add("C",2);
-        linkedList.add("D",0);
+        linkedList.add("A", 0);
+        linkedList.add("B", 1);
+        linkedList.add("C", 2);
+        linkedList.add("D", 0);
         assertEquals("[D, A, B, C]", linkedList.toString());
-        linkedList.add("F",1);
+        linkedList.add("F", 1);
         assertEquals("[D, F, A, B, C]", linkedList.toString());
-        linkedList.add("R",4);
+        linkedList.add("R", 4);
         assertEquals("[D, F, A, B, R, C]", linkedList.toString());
 
     }
 
     @Test
-    @DisplayName("When call 'add(Object value)' then size increase")
+    @DisplayName("When call 'add(Object value)' then size increases")
     void addAndSize() {
         assertEquals(0, linkedList.size());
         linkedList.add("A");
@@ -114,7 +114,7 @@ class LinkedListTest {
     }
 
     @Test
-    void isNEmpty() {
+    void isEmpty() {
         linkedList.clear();
         assertTrue(linkedList.isEmpty());
     }
@@ -154,7 +154,7 @@ class LinkedListTest {
     }
 
     @Test
-    @DisplayName("When the size of the array becomes more than 10 the array capacity increase")
+    @DisplayName("When the size of the array becomes more than 10 the array capacity increases")
     void whenSizeMoreThan10() {
         linkedList.clear();
         for (int i = 0; i < 11; i++) {
