@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.function.Consumer;
 
 public class LinkedList implements List {
     public static final String EXCEPTION_SET_VALUE = "We can set value by index between [0, size - 1]";
@@ -190,12 +190,7 @@ public class LinkedList implements List {
 
     @Override
     public Iterator iterator() {
-        return null;
-    }
-
-    @Override
-    public void forEach(Consumer action) {
-        List.super.forEach(action);
+        return new MyIterator(head);
     }
 
     @Data
@@ -205,4 +200,37 @@ public class LinkedList implements List {
         private Node prev;
         private Node next;
     }
+
+    private class MyIterator implements Iterator {
+        private Node currentNode;
+        private int currentIndex;
+
+        public MyIterator(Node head) {
+            this.currentNode = head;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return currentIndex < size;
+        }
+
+        @Override
+        public Object next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            Object returnedValue = currentNode.value;
+            currentNode = currentNode.next;
+            currentIndex++;
+            return returnedValue;
+        }
+
+        @Override
+        public void remove() {
+            System.out.println("current index is = " + currentIndex);
+            LinkedList.this.remove(currentIndex);
+            this.currentNode = head;
+        }
+    }
+
 }
