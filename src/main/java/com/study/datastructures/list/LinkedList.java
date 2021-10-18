@@ -13,6 +13,7 @@ public class LinkedList implements List {
     public static final String EXCEPTION_ADD_VALUE = "We can add value by index between [0, size - 1]";
     public static final String EXCEPTION_REMOVE_VALUE = "We can remove value by index between [0, size - 1]";
     public static final String EXCEPTION_GET_VALUE = "We can get value by index between [0, size - 1]";
+    public static final String EXCEPTION_REMOVE_ITERATOR = "Before call iterator.remove() must be called iterator.next()";
 
     private Node head;
     private Node tail;
@@ -204,6 +205,7 @@ public class LinkedList implements List {
     private class MyIterator implements Iterator {
         private Node currentNode;
         private int currentIndex;
+        private boolean nextWasCalled;
 
         public MyIterator() {
             this.currentNode = head;
@@ -219,7 +221,9 @@ public class LinkedList implements List {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
+            nextWasCalled = true;
             Object returnedValue = currentNode.value;
+            System.out.println(returnedValue + " returned value ");
             currentNode = currentNode.next;
             currentIndex++;
             return returnedValue;
@@ -227,8 +231,11 @@ public class LinkedList implements List {
 
         @Override
         public void remove() {
-            LinkedList.this.remove(currentIndex);
-            this.currentNode = head;
+            if (!nextWasCalled) {
+                throw new IllegalStateException(EXCEPTION_REMOVE_ITERATOR);
+            }
+            nextWasCalled = false;
+            LinkedList.this.remove(--currentIndex);
         }
     }
 

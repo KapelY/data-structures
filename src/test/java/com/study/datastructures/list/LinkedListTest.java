@@ -172,12 +172,24 @@ class LinkedListTest {
 
     @Test
     @DisplayName("When call 'iterator.next' on empty list, then thrown NoSuchElementException")
-    void whenCall() {
+    void expectedNoSuchElementException() {
         Iterator iterator = linkedList.iterator();
         assertThrows(
                 NoSuchElementException.class,
                 () -> iterator.next());
+    }
 
+    @Test
+    @DisplayName("When call 'iterator.remove()' without calling 'iterator.next()' before, " +
+            "then custom exception mustBe thrown ")
+    void whenCallIteratorRemoveWithoutCallingIteratorNextBeforeThenCustomExceptionMustBeThrown() {
+        linkedList.add("!");
+        Iterator iterator = linkedList.iterator();
+        Exception exception = assertThrows(
+                IllegalStateException.class,
+                () -> iterator.remove());
+
+        assertTrue(exception.getMessage().contains(EXCEPTION_REMOVE_ITERATOR));
     }
 
     @Test
@@ -187,6 +199,7 @@ class LinkedListTest {
         linkedList.add("B");
         linkedList.add("C");
         Iterator iterator = linkedList.iterator();
+        assertThat(iterator.next(), is("A"));
         iterator.remove();
         assertThat(iterator.next(), is("B"));
         assertThat(iterator.next(), is("C"));
@@ -194,8 +207,36 @@ class LinkedListTest {
 
         linkedList.add("A");
         iterator = linkedList.iterator();
+        assertThat(iterator.next(), is("A"));
         iterator.remove();
         assertEquals(false, iterator.hasNext());
+    }
+
+    @Test
+    @DisplayName("When call 'iterator.remove()' at the end of the list, then correct remove.")
+    void whenCallIteratorRemoveAtTheEndOfTheListThenCorrectRemove() {
+        linkedList.add("A");
+        linkedList.add("B");
+        linkedList.add("C");
+        Iterator iterator = linkedList.iterator();
+        assertThat(iterator.next(), is("A"));
+        assertThat(iterator.next(), is("B"));
+        assertThat(iterator.next(), is("C"));
+        iterator.remove();
+        assertThat(iterator.hasNext(), is(false));
+    }
+
+    @Test
+    @DisplayName("When call 'iterator.remove()' in the middle of the list, then correct remove.")
+    void whenCallIteratorRemoveInTheMiddleOfTheListThenCorrectRemove() {
+        linkedList.add("A");
+        linkedList.add("B");
+        linkedList.add("C");
+        Iterator iterator = linkedList.iterator();
+        assertThat(iterator.next(), is("A"));
+        assertThat(iterator.next(), is("B"));
+        iterator.remove();
+        assertThat(iterator.next(), is("C"));
     }
 
     @Test

@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.StringJoiner;
-import java.util.function.Consumer;
 
 
 public class ArrayList implements List {
@@ -12,6 +11,7 @@ public class ArrayList implements List {
     public static final String EXCEPTION_ADD_VALUE = "We can add value by index between [0, size - 1]";
     public static final String EXCEPTION_REMOVE_VALUE = "We can remove value by index between [0, size - 1]";
     public static final String EXCEPTION_GET_VALUE = "We can get value by index between [0, size - 1]";
+    public static final String EXCEPTION_REMOVE_ITERATOR = "Before call iterator.remove() must be called iterator.next()";
     private static final int DEFAULT_CAPACITY = 10;
     private Object[] array;
     private int size;
@@ -152,6 +152,7 @@ public class ArrayList implements List {
     private class MyIterator implements Iterator {
         private Object[] iterArray;
         private int currentIndex;
+        private boolean nextWasCalled;
 
         public MyIterator() {
             this.iterArray = array;
@@ -167,12 +168,17 @@ public class ArrayList implements List {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            return array[currentIndex++];
+            nextWasCalled = true;
+            return iterArray[currentIndex++];
         }
 
         @Override
         public void remove() {
-            ArrayList.this.remove(currentIndex);
+            if (!nextWasCalled) {
+                throw new IllegalStateException(EXCEPTION_REMOVE_ITERATOR);
+            }
+            nextWasCalled = false;
+            ArrayList.this.remove(--currentIndex);
             this.iterArray = array;
         }
     }

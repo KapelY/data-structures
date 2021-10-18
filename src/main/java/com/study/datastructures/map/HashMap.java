@@ -3,12 +3,9 @@ package com.study.datastructures.map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.StringJoiner;
+import java.util.*;
 
-public class HashMap implements Map {
+public class HashMap implements Map, Iterable {
     private static final int DEFAULT_CAPACITY = 5;
 
     private List[] buckets;
@@ -125,10 +122,39 @@ public class HashMap implements Map {
         return key.hashCode() % buckets.length;
     }
 
+    @Override
+    public Iterator iterator() {
+        return new HashMapIterator();
+    }
+
     @Data
     @AllArgsConstructor
     public static final class Entry {
         Object key;
         Object value;
+    }
+
+    private class HashMapIterator implements Iterator {
+        private List[] listOfBuckets;
+        private int currentIndex;
+
+        public HashMapIterator() {
+            this.listOfBuckets = buckets;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public Object next() {
+            return null;
+        }
+
+        @Override
+        public void remove() {
+            Iterator.super.remove();
+        }
     }
 }

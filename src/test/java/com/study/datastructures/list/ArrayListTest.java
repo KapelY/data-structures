@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import static com.study.datastructures.list.ArrayList.*;
+import static com.study.datastructures.list.LinkedList.EXCEPTION_REMOVE_ITERATOR;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
@@ -132,6 +133,7 @@ class ArrayListTest {
         arrayList.add("B");
         arrayList.add("C");
         Iterator iterator = arrayList.iterator();
+        assertThat(iterator.next(), is("A"));
         iterator.remove();
         assertThat(iterator.next(), is("B"));
         assertThat(iterator.next(), is("C"));
@@ -139,8 +141,34 @@ class ArrayListTest {
 
         arrayList.add("A");
         iterator = arrayList.iterator();
+        iterator.next();
         iterator.remove();
         assertEquals(false, iterator.hasNext());
+    }
+
+    @Test
+    @DisplayName("When call 'iterator.next' on empty list, then thrown NoSuchElementException")
+    void expectedNoSuchElementException() {
+        clear();
+        Iterator iterator = arrayList.iterator();
+        assertThrows(
+                NoSuchElementException.class,
+                () -> iterator.next());
+    }
+
+    @Test
+    @DisplayName("When call 'iterator.remove()' without calling 'iterator.next()' before, " +
+            "then custom exception must be thrown ")
+    void whenCallIteratorRemoveWithoutCallingIteratorNextBeforeThenCustomExceptionMustBeThrown() {
+        arrayList.add("!");
+        arrayList.add("!");
+        arrayList.add("!");
+        Iterator iterator = arrayList.iterator();
+        Exception exception = assertThrows(
+                IllegalStateException.class,
+                () -> iterator.remove());
+
+        assertTrue(exception.getMessage().contains(EXCEPTION_REMOVE_ITERATOR));
     }
 
     @Test
