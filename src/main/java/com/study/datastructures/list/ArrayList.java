@@ -2,6 +2,7 @@ package com.study.datastructures.list;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
@@ -145,11 +146,34 @@ public class ArrayList implements List {
 
     @Override
     public Iterator iterator() {
-        return null;
+        return new MyIterator();
     }
 
-    @Override
-    public void forEach(Consumer action) {
-        List.super.forEach(action);
+    private class MyIterator implements Iterator {
+        private Object[] iterArray;
+        private int currentIndex;
+
+        public MyIterator() {
+            this.iterArray = array;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return currentIndex < size;
+        }
+
+        @Override
+        public Object next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            return array[currentIndex++];
+        }
+
+        @Override
+        public void remove() {
+            ArrayList.this.remove(currentIndex);
+            this.iterArray = array;
+        }
     }
 }

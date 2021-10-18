@@ -174,7 +174,7 @@ class LinkedListTest {
     @DisplayName("When call 'iterator.next' on empty list, then thrown NoSuchElementException")
     void whenCall() {
         Iterator iterator = linkedList.iterator();
-        Exception exception = assertThrows(
+        assertThrows(
                 NoSuchElementException.class,
                 () -> iterator.next());
 

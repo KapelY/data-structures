@@ -190,7 +190,7 @@ public class LinkedList implements List {
 
     @Override
     public Iterator iterator() {
-        return new MyIterator(head);
+        return new MyIterator();
     }
 
     @Data
@@ -205,7 +205,7 @@ public class LinkedList implements List {
         private Node currentNode;
         private int currentIndex;
 
-        public MyIterator(Node head) {
+        public MyIterator() {
             this.currentNode = head;
         }
 
@@ -227,7 +227,6 @@ public class LinkedList implements List {
 
         @Override
         public void remove() {
-            System.out.println("current index is = " + currentIndex);
             LinkedList.this.remove(currentIndex);
             this.currentNode = head;
         }

@@ -4,7 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import static com.study.datastructures.list.ArrayList.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ArrayListTest {
@@ -95,6 +100,47 @@ class ArrayListTest {
     @Test
     void testToString() {
         assertEquals("[A, B, C]", arrayList.toString());
+    }
+
+    @Test
+    @DisplayName("When call 'iterator.next()', then correct output is shown")
+    void whenCallForeachThenCorrectOutputIsShown() {
+        arrayList.add("A");
+        arrayList.add("B");
+        arrayList.add("C");
+        Iterator iterator = arrayList.iterator();
+        assertEquals("A", iterator.next());
+        assertEquals("B", iterator.next());
+        assertEquals("C", iterator.next());
+    }
+
+    @Test
+    @DisplayName("When call 'iterator.next' on empty list, then thrown NoSuchElementException")
+    void whenCall() {
+        clear();
+        Iterator iterator = arrayList.iterator();
+        assertThrows(
+                NoSuchElementException.class,
+                () -> iterator.next());
+
+    }
+
+    @Test
+    @DisplayName("When call iterator.remove(), then it must be removed correctly")
+    void whenCallIteratorRemoveThenItMustBeRemovedCorrectly() {
+        arrayList.add("A");
+        arrayList.add("B");
+        arrayList.add("C");
+        Iterator iterator = arrayList.iterator();
+        iterator.remove();
+        assertThat(iterator.next(), is("B"));
+        assertThat(iterator.next(), is("C"));
+        clear();
+
+        arrayList.add("A");
+        iterator = arrayList.iterator();
+        iterator.remove();
+        assertEquals(false, iterator.hasNext());
     }
 
     @Test
