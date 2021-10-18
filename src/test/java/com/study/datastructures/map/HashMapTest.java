@@ -1,10 +1,18 @@
 package com.study.datastructures.map;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+
+import static com.study.datastructures.list.LinkedList.EXCEPTION_REMOVE_ITERATOR;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.*;
 
 class HashMapTest {
     private Map map = new HashMap();
@@ -68,26 +76,19 @@ class HashMapTest {
     }
 
     @Test
-    @DisplayName("When call 'remove(key)' on the last entry in a bucket, then bucket should be null(not empty list)")
-    void remove() {
+    @DisplayName("When call 'toString()'")
+    void whenCallToString() {
         map.put("1", "11");
         map.put("2", "12");
         assertEquals(2, map.size());
         assertEquals(
                 "[[HashMap.Entry(key=2, value=12)], " +
-                        "null, " +
-                        "null, " +
-                        "null, " +
                         "[HashMap.Entry(key=1, value=11)]]",
                 map.toString());
         assertEquals("12", map.remove("2"));
         assertEquals(1, map.size());
         assertEquals(
-                "[null, " +
-                        "null, " +
-                        "null, " +
-                        "null, " +
-                        "[HashMap.Entry(key=1, value=11)]]",
+                "[[HashMap.Entry(key=1, value=11)]]",
                 map.toString());
     }
 
@@ -96,5 +97,50 @@ class HashMapTest {
     void whenCreateHashMapWithCustomBucketSizeThenItShouldBeCreated() {
         HashMap customMapSize100 = new HashMap(100);
         assertEquals(100, customMapSize100.capacity());
+    }
+
+    @Test
+    @DisplayName("When call iter over the map, then correct data is shown")
+    void whenCallIterOverTheMapThenCorrectDataIsShown() {
+        map.put("1", "A");
+        final Iterator iterator = map.iterator();
+        assertThat((HashMap.Entry)iterator.next(), is(new HashMap.Entry("1", "A")));
+    }
+
+    @Test
+    @DisplayName("When call 'iterator.remove()', then the entry removed")
+    void whenCallIteratorRemoveThenTheEntryRemoved() {
+        map.put("1", "A");
+        final Iterator iterator = map.iterator();
+        iterator.next();
+        iterator.remove();
+        assertThat(map.size(), is(0));
+        assertTrue(Objects.isNull(map.get("1")));
+    }
+
+    @Test
+    @DisplayName("When call 'iterator.remove()' without calling 'iterator.next()' before, " +
+            "then custom exception must be thrown ")
+    void whenCallIteratorRemoveWithoutCallingIteratorNextBeforeThenCustomExceptionMustBeThrown() {
+        map.put("1", "11");
+        map.put("2", "22");
+        map.put("3", 33);
+        Iterator iterator = map.iterator();
+        Exception exception = assertThrows(
+                IllegalStateException.class,
+                () -> iterator.remove());
+
+        assertTrue(exception.getMessage().contains(EXCEPTION_REMOVE_ITERATOR));
+    }
+
+    @Test
+    @DisplayName("When call 'iterator.next' on empty list, then thrown NoSuchElementException")
+    void whenCall() {
+        map.clear();
+        Iterator iterator = map.iterator();
+        assertThrows(
+                NoSuchElementException.class,
+                () -> iterator.next());
+
     }
 }

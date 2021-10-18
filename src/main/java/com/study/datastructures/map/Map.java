@@ -1,6 +1,6 @@
 package com.study.datastructures.map;
 
-public interface Map {
+public interface Map extends Iterable {
 
     Object put(Object key, Object value);
 

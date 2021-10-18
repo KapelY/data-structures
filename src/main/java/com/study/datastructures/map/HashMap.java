@@ -2,10 +2,12 @@ package com.study.datastructures.map;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.*;
 
-public class HashMap implements Map, Iterable {
+public class HashMap implements Map {
+    public static final String EXCEPTION_REMOVE_ITERATOR = "Before call iterator.remove() must be called iterator.next()";
     private static final int DEFAULT_CAPACITY = 5;
 
     private List[] buckets;
@@ -42,8 +44,9 @@ public class HashMap implements Map, Iterable {
     public Object get(Object key) {
         var bucketIndex = findBucketIndex(key);
         Object result = null;
-        if (buckets[bucketIndex] != null) {
-            result = findEntryValue(buckets[bucketIndex], key);
+        final List bucket = buckets[bucketIndex];
+        if (bucket != null) {
+            result = findEntryValue(bucket, key);
         }
         return result;
     }
@@ -62,9 +65,10 @@ public class HashMap implements Map, Iterable {
     public Object remove(Object key) {
         Object oldValue = null;
         var bucketIndex = findBucketIndex(key);
+
         List<Entry> list = buckets[bucketIndex];
         if (list != null && findEntryIndex(list, key) != null) {
-            ListIterator iterator = list.listIterator();
+            Iterator iterator = list.listIterator();
             while (iterator.hasNext()){
                 Entry entry = ((Entry)iterator.next());
                 if (entry.key == key) {
@@ -82,14 +86,16 @@ public class HashMap implements Map, Iterable {
 
     @Override
     public void clear() {
-        buckets = new ArrayList[DEFAULT_CAPACITY];
+        buckets = new ArrayList[capacity()];
     }
 
     @Override
     public String toString() {
         StringJoiner stringJoiner = new StringJoiner(", ", "[", "]");
         for (int i = 0; i < buckets.length; i++) {
-            stringJoiner.add(String.valueOf(buckets[i]));
+            if (buckets[i] != null) {
+                stringJoiner.add(String.valueOf(buckets[i]));
+            }
         }
         return stringJoiner.toString();
     }
@@ -129,32 +135,51 @@ public class HashMap implements Map, Iterable {
 
     @Data
     @AllArgsConstructor
+    @Getter
     public static final class Entry {
         Object key;
         Object value;
     }
 
     private class HashMapIterator implements Iterator {
-        private List[] listOfBuckets;
-        private int currentIndex;
+        private List<Entry> bucketsCopy;
+        private int index;
+        private boolean nextWasCalled;
 
         public HashMapIterator() {
-            this.listOfBuckets = buckets;
+            bucketsCopy = new ArrayList<>();
+            for (int i = 0; i < buckets.length; i++) {
+                if (buckets[i] != null) {
+                    Iterator iterator = buckets[i].iterator();
+                    while (iterator.hasNext()) {
+                        bucketsCopy.add((Entry) iterator.next());
+                    }
+                }
+            }
         }
 
         @Override
         public boolean hasNext() {
-            return false;
+            return index < size;
         }
 
         @Override
-        public Object next() {
-            return null;
+        public Entry next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            nextWasCalled = true;
+            return bucketsCopy.get(index++);
         }
 
         @Override
         public void remove() {
-            Iterator.super.remove();
+            if (!nextWasCalled) {
+                throw new IllegalStateException(EXCEPTION_REMOVE_ITERATOR);
+            }
+            nextWasCalled = false;
+            Object key = bucketsCopy.remove(--index).getKey();
+            HashMap.this.remove(key);
         }
     }
 }

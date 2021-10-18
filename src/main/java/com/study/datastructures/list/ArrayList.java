@@ -150,13 +150,8 @@ public class ArrayList implements List {
     }
 
     private class MyIterator implements Iterator {
-        private Object[] iterArray;
         private int currentIndex;
         private boolean nextWasCalled;
-
-        public MyIterator() {
-            this.iterArray = array;
-        }
 
         @Override
         public boolean hasNext() {
@@ -169,7 +164,7 @@ public class ArrayList implements List {
                 throw new NoSuchElementException();
             }
             nextWasCalled = true;
-            return iterArray[currentIndex++];
+            return array[currentIndex++];
         }
 
         @Override
@@ -179,7 +174,6 @@ public class ArrayList implements List {
             }
             nextWasCalled = false;
             ArrayList.this.remove(--currentIndex);
-            this.iterArray = array;
         }
     }
 }
