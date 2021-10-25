@@ -125,7 +125,7 @@ public class HashMap implements Map {
     }
 
     private int findBucketIndex(Object key) {
-        return key.hashCode() % buckets.length;
+        return Math.abs(key.hashCode()) % buckets.length;
     }
 
     @Override
