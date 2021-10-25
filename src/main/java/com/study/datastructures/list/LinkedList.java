@@ -223,7 +223,6 @@ public class LinkedList implements List {
             }
             nextWasCalled = true;
             Object returnedValue = currentNode.value;
-            System.out.println(returnedValue + " returned value ");
             currentNode = currentNode.next;
             currentIndex++;
             return returnedValue;
