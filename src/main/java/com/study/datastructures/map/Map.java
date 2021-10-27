@@ -1,16 +1,16 @@
 package com.study.datastructures.map;
 
-public interface Map extends Iterable {
+public interface Map<K, V> extends Iterable {
 
-    Object put(Object key, Object value);
+    V put(K key, V value);
 
-    Object get(Object key);
+    V get(Object key);
 
     int size();
 
     boolean containsKey(Object key);
 
-    Object remove(Object key);
+    V remove(K key);
 
     void clear();
 }

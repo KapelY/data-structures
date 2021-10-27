@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ArrayListTest {
-    private final List arrayList = new ArrayList();
+    private final List<String> arrayList = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
@@ -109,7 +109,7 @@ class ArrayListTest {
         arrayList.add("A");
         arrayList.add("B");
         arrayList.add("C");
-        Iterator iterator = arrayList.iterator();
+        Iterator<String> iterator = arrayList.iterator();
         assertEquals("A", iterator.next());
         assertEquals("B", iterator.next());
         assertEquals("C", iterator.next());
@@ -119,10 +119,10 @@ class ArrayListTest {
     @DisplayName("When call 'iterator.next' on empty list, then thrown NoSuchElementException")
     void whenCall() {
         clear();
-        Iterator iterator = arrayList.iterator();
+        Iterator<String> iterator = arrayList.iterator();
         assertThrows(
                 NoSuchElementException.class,
-                () -> iterator.next());
+                iterator::next);
 
     }
 
@@ -132,7 +132,7 @@ class ArrayListTest {
         arrayList.add("A");
         arrayList.add("B");
         arrayList.add("C");
-        Iterator iterator = arrayList.iterator();
+        Iterator<String> iterator = arrayList.iterator();
         assertThat(iterator.next(), is("A"));
         iterator.remove();
         assertThat(iterator.next(), is("B"));
@@ -143,17 +143,17 @@ class ArrayListTest {
         iterator = arrayList.iterator();
         iterator.next();
         iterator.remove();
-        assertEquals(false, iterator.hasNext());
+        assertFalse(iterator.hasNext());
     }
 
     @Test
     @DisplayName("When call 'iterator.next' on empty list, then thrown NoSuchElementException")
     void expectedNoSuchElementException() {
         clear();
-        Iterator iterator = arrayList.iterator();
+        Iterator<String> iterator = arrayList.iterator();
         assertThrows(
                 NoSuchElementException.class,
-                () -> iterator.next());
+                iterator::next);
     }
 
     @Test
@@ -163,10 +163,10 @@ class ArrayListTest {
         arrayList.add("!");
         arrayList.add("!");
         arrayList.add("!");
-        Iterator iterator = arrayList.iterator();
+        Iterator<String> iterator = arrayList.iterator();
         Exception exception = assertThrows(
                 IllegalStateException.class,
-                () -> iterator.remove());
+                iterator::remove);
 
         assertTrue(exception.getMessage().contains(EXCEPTION_REMOVE_ITERATOR));
     }
@@ -176,7 +176,7 @@ class ArrayListTest {
     void whenSizeMoreThan10() {
         arrayList.clear();
         for (int i = 0; i < 11; i++) {
-            arrayList.add(i);
+            arrayList.add(String.valueOf(i));
         }
 
         assertEquals(11, arrayList.size());
@@ -221,7 +221,7 @@ class ArrayListTest {
         arrayList.clear();
         Exception exception = assertThrows(
                 IndexOutOfBoundsException.class,
-                () -> arrayList.set(0, 0));
+                () -> arrayList.set("", 0));
 
         assertTrue(exception.getMessage().contains(EXCEPTION_SET_VALUE));
     }

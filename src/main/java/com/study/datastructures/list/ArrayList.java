@@ -1,6 +1,5 @@
 package com.study.datastructures.list;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -148,7 +147,7 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new <T> MyIterator();
+        return new <T>MyIterator();
     }
 
     private class MyIterator implements Iterator<T> {

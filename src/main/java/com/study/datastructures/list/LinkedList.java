@@ -19,8 +19,7 @@ public class LinkedList<T> implements List<T> {
     private Node<T> tail;
     private int size;
 
-    public LinkedList() {
-    }
+    public LinkedList() {}
 
     @Override
     public void add(T value) {
@@ -87,7 +86,6 @@ public class LinkedList<T> implements List<T> {
         if (removeNode.next != null) {
             removeNode.next.prev = removeNode.prev;
         }
-
         return removeNode.value;
     }
 
@@ -191,12 +189,12 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new <T> MyIterator();
+        return new <T>MyIterator();
     }
 
     @Data
     @AllArgsConstructor
-    public  static class Node<T> {
+    public static class Node<T> {
         private T value;
         private Node<T> prev;
         private Node<T> next;
@@ -237,5 +235,4 @@ public class LinkedList<T> implements List<T> {
             LinkedList.this.remove(--currentIndex);
         }
     }
-
 }
