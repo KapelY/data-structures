@@ -1,36 +1,38 @@
 package com.study.datastructures.list;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.StringJoiner;
 
 
-public class ArrayList implements List {
+public class ArrayList<T> implements List<T> {
     public static final String EXCEPTION_SET_VALUE = "We can set value by index between [0, size - 1]";
     public static final String EXCEPTION_ADD_VALUE = "We can add value by index between [0, size - 1]";
     public static final String EXCEPTION_REMOVE_VALUE = "We can remove value by index between [0, size - 1]";
     public static final String EXCEPTION_GET_VALUE = "We can get value by index between [0, size - 1]";
     public static final String EXCEPTION_REMOVE_ITERATOR = "Before call iterator.remove() must be called iterator.next()";
     private static final int DEFAULT_CAPACITY = 10;
-    private Object[] array;
+    private T[] array;
     private int size;
 
     public ArrayList() {
         this(DEFAULT_CAPACITY);
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList(int capacity) {
-        this.array = new Object[capacity];
+        array = (T[]) new Object[capacity];
     }
 
     @Override
-    public void add(Object value) {
+    public void add(T value) {
         add(value, size);
     }
 
     @Override
-    public void add(Object value, int index) {
+    public void add(T value, int index) {
         checkCapacity();
         addCheckRange(index);
 
@@ -43,9 +45,9 @@ public class ArrayList implements List {
     }
 
     @Override
-    public Object remove(int index) {
+    public T remove(int index) {
         checkRange(index, EXCEPTION_REMOVE_VALUE);
-        Object oldObject = array[index];
+        T oldObject = array[index];
         size -= 1;
         if (size - index >= 0) {
             System.arraycopy(array, index + 1, array, index, size - index);
@@ -56,15 +58,15 @@ public class ArrayList implements List {
     }
 
     @Override
-    public Object get(int index) {
+    public T get(int index) {
         checkRange(index, EXCEPTION_GET_VALUE);
         return array[index];
     }
 
     @Override
-    public Object set(Object value, int index) {
+    public T set(T value, int index) {
         checkRange(index, EXCEPTION_SET_VALUE);
-        Object oldValue = array[index];
+        T oldValue = array[index];
         array[index] = value;
         return oldValue;
     }
@@ -88,8 +90,8 @@ public class ArrayList implements List {
     }
 
     @Override
-    public boolean contains(Object value) {
-        for (Object i : array) {
+    public boolean contains(T value) {
+        for (T i : array) {
             if (i == value) {
                 return true;
             }
@@ -98,7 +100,7 @@ public class ArrayList implements List {
     }
 
     @Override
-    public int indexOf(Object value) {
+    public int indexOf(T value) {
         for (int j = 0; j < array.length; j++) {
             if (array[j] == value) {
                 return j;
@@ -108,7 +110,7 @@ public class ArrayList implements List {
     }
 
     @Override
-    public int lastIndexOf(Object value) {
+    public int lastIndexOf(T value) {
         for (int j = array.length - 1; j > -1; j--) {
             if (array[j] == value) {
                 return j;
@@ -145,11 +147,11 @@ public class ArrayList implements List {
     }
 
     @Override
-    public Iterator iterator() {
-        return new MyIterator();
+    public Iterator<T> iterator() {
+        return new <T> MyIterator();
     }
 
-    private class MyIterator implements Iterator {
+    private class MyIterator implements Iterator<T> {
         private int currentIndex;
         private boolean nextWasCalled;
 
@@ -159,7 +161,7 @@ public class ArrayList implements List {
         }
 
         @Override
-        public Object next() {
+        public T next() {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
