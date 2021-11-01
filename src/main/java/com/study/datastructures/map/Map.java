@@ -1,6 +1,6 @@
 package com.study.datastructures.map;
 
-public interface Map<K, V> extends Iterable {
+public interface Map<K, V> extends Iterable<HashMap.Entry<K, V>> {
 
     V put(K key, V value);
 

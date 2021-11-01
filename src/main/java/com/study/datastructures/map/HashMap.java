@@ -6,7 +6,6 @@ import lombok.Data;
 import java.util.*;
 
 public class HashMap<K, V> implements Map<K, V> {
-    public static final String EXCEPTION_REMOVE_ITERATOR = "Before call iterator.remove() must be called iterator.next()";
     private static final int DEFAULT_CAPACITY = 5;
 
     private List<Entry<K, V>>[] buckets;
@@ -28,9 +27,10 @@ public class HashMap<K, V> implements Map<K, V> {
         if (buckets[bucketIndex] == null) {
             buckets[bucketIndex] = new ArrayList<>();
         }
-        var entryIndex = findEntryIndex(buckets[bucketIndex], key);
-        if (entryIndex != null) {
-            buckets[bucketIndex].set(entryIndex, new Entry<>(key, value));
+
+        var entry = findEntry(buckets[bucketIndex], key);
+        if (entry != null) {
+            entry.value = value;
         } else {
             buckets[bucketIndex].add(new Entry<>(key, value));
             size++;
@@ -42,12 +42,11 @@ public class HashMap<K, V> implements Map<K, V> {
     @Override
     public V get(Object key) {
         var bucketIndex = getIndex(key);
-        V result = null;
         List<Entry<K, V>> bucket = buckets[bucketIndex];
         if (bucket != null) {
-            result = findEntryValue(bucket, key);
+            return findEntryValue(bucket, key);
         }
-        return result;
+        return null;
     }
 
     @Override
@@ -59,7 +58,7 @@ public class HashMap<K, V> implements Map<K, V> {
     public boolean containsKey(Object key) {
         var bucket = buckets[getIndex(key)];
         if (bucket != null) {
-            return findEntryValue(bucket, key) != null;
+            return findEntry(bucket, key) != null;
         }
         return false;
     }
@@ -104,14 +103,26 @@ public class HashMap<K, V> implements Map<K, V> {
         return stringJoiner.toString();
     }
 
-    protected int capacity() {
+    int capacity() {
         return buckets.length;
     }
 
     private void checkCapacity() {
-        if (size > buckets.length * 3 / 4) {
-
+        if (size >= capacity() * 3 / 4) {
+            allocateNewMap();
         }
+    }
+
+    private void allocateNewMap() {
+        Iterator<Entry<K, V>> mapIterator = this.iterator();
+        HashMap<K, V> newMap = new HashMap<>( capacity() * 2);
+        Entry<K, V> entry;
+        while (mapIterator.hasNext()) {
+            entry = mapIterator.next();
+            newMap.put(entry.key, entry.value);
+        }
+        this.buckets = newMap.buckets;
+
     }
 
     private V findEntryValue(List<Entry<K, V>> list, Object key) {
@@ -123,12 +134,12 @@ public class HashMap<K, V> implements Map<K, V> {
         return null;
     }
 
-    private Integer findEntryIndex(List<Entry<K, V>> list, Object key) {
+    private Entry<K, V> findEntry(List<Entry<K, V>> list, Object key) {
         Entry<K, V> entry;
-        for (int i = 0; i < list.size(); i++) {
-            entry = list.get(i);
+        for (Entry<K, V> kvEntry : list) {
+            entry = kvEntry;
             if (entry != null && entry.key.equals(key)) {
-                return i;
+                return entry;
             }
         }
         return null;
@@ -155,25 +166,18 @@ public class HashMap<K, V> implements Map<K, V> {
     }
 
     private class HashMapIterator implements Iterator<Entry<K, V>> {
-        private Iterator bucketIterator;
-        private int bucketIndex;
-        private List<Entry<K, V>> bucketsCopy;
+        private static final String EXCEPTION_REMOVE_ITERATOR = "Before call iterator.remove() must be called iterator.next()";
+        private int bucketCounter;
+        private int entryCounter;
+        private Iterator<Entry<K, V>> entryIterator;
         private boolean nextWasCalled;
 
         public HashMapIterator() {
-//            bucketsCopy = new ArrayList<>();
-//            for (List<Entry<K, V>> bucket : buckets) {
-//                if (bucket != null) {
-//                    for (Entry<K, V> entry : bucket) {
-//                        bucketsCopy.add(entry);
-//                    }
-//                }
-//            }
         }
 
         @Override
         public boolean hasNext() {
-            return bucketIndex < size;
+            return entryCounter < size;
         }
 
         @Override
@@ -182,7 +186,12 @@ public class HashMap<K, V> implements Map<K, V> {
                 throw new NoSuchElementException();
             }
             nextWasCalled = true;
-            return bucketsCopy.get(bucketIndex++);
+            entryCounter++;
+            return getNextEntry();
+        }
+
+        private Entry<K, V> getNextEntry() {
+            return nextEntry();
         }
 
         @Override
@@ -191,8 +200,25 @@ public class HashMap<K, V> implements Map<K, V> {
                 throw new IllegalStateException(EXCEPTION_REMOVE_ITERATOR);
             }
             nextWasCalled = false;
-            K key = bucketsCopy.remove(--bucketIndex).getKey();
-            HashMap.this.remove(key);
+            entryIterator.remove();
+            size--;
+        }
+
+        private Entry<K, V> nextEntry() {
+            if (entryIterator == null || !entryIterator.hasNext()) {
+                nextBucket();
+            }
+            return entryIterator.next();
+        }
+
+        private void nextBucket() {
+            for (int i = bucketCounter; i < buckets.length; i++) {
+                bucketCounter++;
+                if (buckets[i] != null) {
+                    entryIterator = buckets[i].iterator();
+                    break;
+                }
+            }
         }
     }
 }

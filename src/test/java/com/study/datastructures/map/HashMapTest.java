@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HashMapTest {
-    private Map map = new HashMap();
+    private final Map<String, String> map = new HashMap<>();
 
     @BeforeEach
     void setUp() {
@@ -42,10 +42,10 @@ class HashMapTest {
     @Test
     @DisplayName("When call 'get(key)' right after 'put(key, value)', then correct value should return")
     void get() {
-        assertEquals(true, map.put("1", "11").equals("11"));
+        assertEquals("11", map.put("1", "11"));
         map.put("2", "12");
         map.put("3", "13");
-        assertEquals(true, map.put("4", "14").equals("14"));
+        assertEquals("14", map.put("4", "14"));
         assertEquals("11", map.get("1"));
         assertEquals("14", map.get("4"));
     }
@@ -70,8 +70,8 @@ class HashMapTest {
     void containsKey() {
         map.put("1", "11");
         map.put("2", "12");
-        assertEquals(true, map.containsKey("1"));
-        assertEquals(true, map.containsKey("2"));
+        assertTrue(map.containsKey("1"));
+        assertTrue(map.containsKey("2"));
     }
 
     @Test
@@ -94,7 +94,7 @@ class HashMapTest {
     @Test
     @DisplayName("When create HashMap with custom bucket size, then it should be created")
     void whenCreateHashMapWithCustomBucketSizeThenItShouldBeCreated() {
-        HashMap customMapSize100 = new HashMap(100);
+        HashMap<String, String> customMapSize100 = new HashMap<>(100);
         assertEquals(100, customMapSize100.capacity());
     }
 
@@ -102,15 +102,15 @@ class HashMapTest {
     @DisplayName("When call iter over the map, then correct data is shown")
     void whenCallIterOverTheMapThenCorrectDataIsShown() {
         map.put("1", "A");
-        final Iterator iterator = map.iterator();
-        assertThat((HashMap.Entry)iterator.next(), is(new HashMap.Entry("1", "A")));
+        final Iterator<HashMap.Entry<String, String>> iterator = map.iterator();
+        assertThat(iterator.next(), is(new HashMap.Entry<>("1", "A")));
     }
 
     @Test
     @DisplayName("When call 'iterator.remove()', then the entry removed")
     void whenCallIteratorRemoveThenTheEntryRemoved() {
         map.put("1", "A");
-        final Iterator iterator = map.iterator();
+        final Iterator<HashMap.Entry<String, String>> iterator = map.iterator();
         iterator.next();
         iterator.remove();
         assertThat(map.size(), is(0));
@@ -123,11 +123,11 @@ class HashMapTest {
     void whenCallIteratorRemoveWithoutCallingIteratorNextBeforeThenCustomExceptionMustBeThrown() {
         map.put("1", "11");
         map.put("2", "22");
-        map.put("3", 33);
-        Iterator iterator = map.iterator();
+        map.put("3", "33");
+        Iterator<HashMap.Entry<String, String>> iterator = map.iterator();
         Exception exception = assertThrows(
                 IllegalStateException.class,
-                () -> iterator.remove());
+                iterator::remove);
 
         assertTrue(exception.getMessage().contains(EXCEPTION_REMOVE_ITERATOR));
     }
@@ -136,10 +136,27 @@ class HashMapTest {
     @DisplayName("When call 'iterator.next' on empty list, then thrown NoSuchElementException")
     void whenCall() {
         map.clear();
-        Iterator iterator = map.iterator();
+        Iterator<HashMap.Entry<String, String>> iterator = map.iterator();
         assertThrows(
                 NoSuchElementException.class,
-                () -> iterator.next());
+                iterator::next);
 
+    }
+
+    @Test
+    @DisplayName("When size > 75% of map capacity then allocates new Map with new capacity * 2")
+    void whenSize75OfMapCapacityThenAllocatesNewMapWithNewCapacity2() {
+        HashMap<Integer, Integer> hashMap= new HashMap<>(4);
+        hashMap.put(1, 1);
+        hashMap.put(2, 1);
+        hashMap.put(3, 1);
+        assertEquals(4, hashMap.capacity());
+        hashMap.put(4, 1);
+        assertEquals(8, hashMap.capacity());
+        hashMap.put(5, 1);
+        hashMap.put(6, 1);
+        assertEquals(8, hashMap.capacity());
+        hashMap.put(1,1);
+        assertEquals(16, hashMap.capacity());
     }
 }
