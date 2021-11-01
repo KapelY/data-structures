@@ -44,6 +44,9 @@ class ArrayListTest {
     void remove() {
         assertEquals("A", arrayList.remove(0));
         assertEquals(2, arrayList.size());
+        assertEquals("C", arrayList.remove(1));
+        assertEquals("B", arrayList.remove(0));
+        assertEquals(0, arrayList.size());
     }
 
     @Test

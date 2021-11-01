@@ -19,7 +19,8 @@ public class LinkedList<T> implements List<T> {
     private Node<T> tail;
     private int size;
 
-    public LinkedList() {}
+    public LinkedList() {
+    }
 
     @Override
     public void add(T value) {
@@ -36,9 +37,14 @@ public class LinkedList<T> implements List<T> {
             return;
         }
 
-        if (head == tail) {
-            tail = new Node<>(value, head, null);
-            head.next = tail;
+        if (size == 1) {
+            if (index == 1) {
+                tail = new Node<>(value, head, null);
+                head.next = tail;
+            } else {
+                head = new Node<>(value, null, tail);
+                tail.prev = head;
+            }
             size++;
             return;
         }
@@ -51,33 +57,40 @@ public class LinkedList<T> implements List<T> {
             return;
         }
 
-        Node<T> foundNode = findNode(index);
-        if (foundNode == head) {
-            head = new Node<>(value, null, foundNode);
-            foundNode.prev = head;
+        if (index == 0) {
+            Node<T> newNode = new Node<>(value, null, head);
+            head.prev = newNode;
+            head = newNode;
             size++;
             return;
         }
 
-        if (foundNode.prev != null) {
-            Node<T> newNode = new Node<>(value, foundNode.prev, foundNode);
-            foundNode.prev.next = newNode;
-            foundNode.prev = newNode;
-        }
+        Node<T> foundNode = findNode(index);
+        Node<T> newNode = new Node<>(value, foundNode.prev, foundNode);
+        foundNode.prev.next = newNode;
+        foundNode.prev = newNode;
         size++;
     }
 
     @Override
     public T remove(int index) {
         checkRange(index, EXCEPTION_REMOVE_VALUE);
-        size -= 1;
-
         Node<T> removeNode = findNode(index);
-        if (removeNode == head) {
-            head = head.next;
-            if (head != null) {
+        if (size == 1) {
+            clear();
+            return removeNode.value;
+        }
+
+        if (size == 2) {
+            if (index == 0) {
+                head = tail;
+                tail.prev = null;
+            } else {
+                tail = head;
                 head.prev = null;
             }
+            size--;
+            return removeNode.value;
         }
 
         if (removeNode.prev != null) {
@@ -86,6 +99,7 @@ public class LinkedList<T> implements List<T> {
         if (removeNode.next != null) {
             removeNode.next.prev = removeNode.prev;
         }
+        size--;
         return removeNode.value;
     }
 
@@ -154,23 +168,27 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public String toString() {
-        if (head != null) {
             StringJoiner stringJoiner = new StringJoiner(", ", "[", "]");
             Node<T> currentNode = head;
-            while (currentNode.next != null) {
+            while (currentNode != null) {
                 stringJoiner.add(String.valueOf(currentNode.value));
                 currentNode = currentNode.next;
             }
-            stringJoiner.add(String.valueOf(currentNode.value));
             return stringJoiner.toString();
-        }
-        return "";
     }
 
     private Node<T> findNode(int index) {
-        Node<T> currentNode = head;
-        for (int i = 0; i < index; i++) {
-            currentNode = currentNode.next;
+        Node<T> currentNode;
+        if (index < size / 2) {
+            currentNode = head;
+            for (int i = 0; i < index; i++) {
+                currentNode = currentNode.next;
+            }
+        } else {
+            currentNode = tail;
+            for (int i = size - 1; i > index; i--) {
+                currentNode = currentNode.prev;
+            }
         }
         return currentNode;
     }
@@ -194,14 +212,24 @@ public class LinkedList<T> implements List<T> {
 
     @Data
     @AllArgsConstructor
-    public static class Node<T> {
+    private static class Node<T> {
         private T value;
         private Node<T> prev;
         private Node<T> next;
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "value=" + value +
+                    ", prev=" + (prev != null ? (String) prev.value : null) +
+                    ", next=" + (next != null ? (String) next.value : null) +
+                    '}';
+        }
     }
 
     private class MyIterator implements Iterator<T> {
         private Node<T> currentNode;
+        private Node<T> returnedNode;
         private int currentIndex;
         private boolean nextWasCalled;
 
@@ -220,10 +248,10 @@ public class LinkedList<T> implements List<T> {
                 throw new NoSuchElementException();
             }
             nextWasCalled = true;
-            T returnedValue = currentNode.value;
+            returnedNode = currentNode;
             currentNode = currentNode.next;
             currentIndex++;
-            return returnedValue;
+            return returnedNode.value;
         }
 
         @Override
@@ -232,7 +260,15 @@ public class LinkedList<T> implements List<T> {
                 throw new IllegalStateException(EXCEPTION_REMOVE_ITERATOR);
             }
             nextWasCalled = false;
-            LinkedList.this.remove(--currentIndex);
+            System.out.println("currentNode=" + currentNode);
+            if (returnedNode.prev != null && returnedNode.next != null) {
+                returnedNode.prev.next = returnedNode.next;
+                returnedNode.next.prev = returnedNode.prev;
+            } else if(returnedNode.prev != null) {
+                returnedNode.prev.next = null;
+            } else if (returnedNode.next != null) {
+                returnedNode.next.prev = null;
+            }
         }
     }
 }

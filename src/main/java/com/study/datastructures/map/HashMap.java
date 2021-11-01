@@ -23,26 +23,25 @@ public class HashMap<K, V> implements Map<K, V> {
 
     @Override
     public V put(K key, V value) {
-        var bucketIndex = findBucketIndex(key);
+        checkCapacity();
+        var bucketIndex = getIndex(key);
         if (buckets[bucketIndex] == null) {
             buckets[bucketIndex] = new ArrayList<>();
+        }
+        var entryIndex = findEntryIndex(buckets[bucketIndex], key);
+        if (entryIndex != null) {
+            buckets[bucketIndex].set(entryIndex, new Entry<>(key, value));
+        } else {
             buckets[bucketIndex].add(new Entry<>(key, value));
             size++;
-        } else {
-            var entryIndex = findEntryIndex(buckets[bucketIndex], key);
-            if (entryIndex != null) {
-                buckets[bucketIndex].set(entryIndex, new Entry<>(key, value));
-            } else {
-                buckets[bucketIndex].add(new Entry<>(key, value));
-                size++;
-            }
         }
+
         return value;
     }
 
     @Override
     public V get(Object key) {
-        var bucketIndex = findBucketIndex(key);
+        var bucketIndex = getIndex(key);
         V result = null;
         List<Entry<K, V>> bucket = buckets[bucketIndex];
         if (bucket != null) {
@@ -58,20 +57,24 @@ public class HashMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsKey(Object key) {
-        return buckets[findBucketIndex(key)] != null;
+        var bucket = buckets[getIndex(key)];
+        if (bucket != null) {
+            return findEntryValue(bucket, key) != null;
+        }
+        return false;
     }
 
     @Override
     public V remove(Object key) {
         V oldValue = null;
-        var bucketIndex = findBucketIndex(key);
+        var bucketIndex = getIndex(key);
 
         List<Entry<K, V>> list = buckets[bucketIndex];
-        if (list != null && findEntryIndex(list, key) != null) {
+        if (list != null) {
             Iterator<Entry<K, V>> iterator = list.listIterator();
             while (iterator.hasNext()) {
                 Entry<K, V> entry = iterator.next();
-                if (entry.key == key) {
+                if (entry.key.equals(key)) {
                     oldValue = entry.value;
                     iterator.remove();
                     size--;
@@ -105,6 +108,12 @@ public class HashMap<K, V> implements Map<K, V> {
         return buckets.length;
     }
 
+    private void checkCapacity() {
+        if (size > buckets.length * 3 / 4) {
+
+        }
+    }
+
     private V findEntryValue(List<Entry<K, V>> list, Object key) {
         for (Entry<K, V> entry : list) {
             if (entry != null && entry.key == key) {
@@ -118,15 +127,19 @@ public class HashMap<K, V> implements Map<K, V> {
         Entry<K, V> entry;
         for (int i = 0; i < list.size(); i++) {
             entry = list.get(i);
-            if (entry != null && entry.key == key) {
+            if (entry != null && entry.key.equals(key)) {
                 return i;
             }
         }
         return null;
     }
 
-    private int findBucketIndex(Object key) {
-        return Math.abs(key.hashCode()) % buckets.length;
+    private int getIndex(Object key) {
+        int hash = key.hashCode();
+        if (hash == Integer.MIN_VALUE) {
+            hash = 42;
+        }
+        return hash % buckets.length;
     }
 
     @Override
@@ -136,30 +149,31 @@ public class HashMap<K, V> implements Map<K, V> {
 
     @Data
     @AllArgsConstructor
-    public static final class Entry<K, V> {
-        K key;
-        V value;
+    public static class Entry<K, V> {
+        private final K key;
+        private V value;
     }
 
     private class HashMapIterator implements Iterator<Entry<K, V>> {
+        private Iterator bucketIterator;
+        private int bucketIndex;
         private List<Entry<K, V>> bucketsCopy;
-        private int index;
         private boolean nextWasCalled;
 
         public HashMapIterator() {
-            bucketsCopy = new ArrayList<>();
-            for (List<Entry<K, V>> bucket : buckets) {
-                if (bucket != null) {
-                    for (Entry<K, V> entry : bucket) {
-                        bucketsCopy.add(entry);
-                    }
-                }
-            }
+//            bucketsCopy = new ArrayList<>();
+//            for (List<Entry<K, V>> bucket : buckets) {
+//                if (bucket != null) {
+//                    for (Entry<K, V> entry : bucket) {
+//                        bucketsCopy.add(entry);
+//                    }
+//                }
+//            }
         }
 
         @Override
         public boolean hasNext() {
-            return index < size;
+            return bucketIndex < size;
         }
 
         @Override
@@ -168,7 +182,7 @@ public class HashMap<K, V> implements Map<K, V> {
                 throw new NoSuchElementException();
             }
             nextWasCalled = true;
-            return bucketsCopy.get(index++);
+            return bucketsCopy.get(bucketIndex++);
         }
 
         @Override
@@ -177,7 +191,7 @@ public class HashMap<K, V> implements Map<K, V> {
                 throw new IllegalStateException(EXCEPTION_REMOVE_ITERATOR);
             }
             nextWasCalled = false;
-            K key = bucketsCopy.remove(--index).getKey();
+            K key = bucketsCopy.remove(--bucketIndex).getKey();
             HashMap.this.remove(key);
         }
     }

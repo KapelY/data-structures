@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LinkedListTest {
-    List linkedList = new LinkedList();
+    LinkedList linkedList = new LinkedList();
 
     @BeforeEach
     void setUp() {
@@ -43,6 +43,24 @@ class LinkedListTest {
     }
 
     @Test
+    @DisplayName("Given list.of(A), when call add(B, 0) expected [B, A]")
+    void addBeforeElement() {
+        clear();
+        linkedList.add("A");
+        linkedList.add("B", 0);
+        assertEquals("[B, A]", linkedList.toString());
+    }
+
+    @Test
+    @DisplayName("Given list.of(A), when call add(B, 1) expected [A, B]")
+    void addAfterElement() {
+        clear();
+        linkedList.add("A");
+        linkedList.add("B", 1);
+        assertEquals("[A, B]", linkedList.toString());
+    }
+
+    @Test
     @DisplayName("When call 'add(Object value, int index)' then correct insert")
     void addByIndex() {
         linkedList.add("A", 0);
@@ -54,7 +72,17 @@ class LinkedListTest {
         assertEquals("[D, F, A, B, C]", linkedList.toString());
         linkedList.add("R", 4);
         assertEquals("[D, F, A, B, R, C]", linkedList.toString());
+    }
 
+    @Test
+    @DisplayName("When add value by index 1 in the list of more then 2 elements")
+    void whenAddValueByIndex1InTheListOfMoreThen2Elements() {
+         linkedList.add("A");
+         linkedList.add("B");
+         linkedList.add("D");
+         linkedList.add("E");
+         linkedList.add("C", 1);
+         assertEquals("[A, C, B, D, E]", linkedList.toString());
     }
 
     @Test
@@ -75,6 +103,16 @@ class LinkedListTest {
         assertEquals("C", linkedList.remove(1));
         assertEquals(1, linkedList.size());
         assertEquals("B", linkedList.remove(0));
+    }
+    @Test
+    void removeHeadTail() {
+        linkedList.add("A");
+        linkedList.add("B");
+        assertEquals("A", linkedList.remove(0));
+        clear();
+        linkedList.add("A");
+        linkedList.add("B");
+        assertEquals("B", linkedList.remove(1));
     }
 
     @Test
@@ -287,7 +325,6 @@ class LinkedListTest {
     @DisplayName("When get with index out of range, then check range throws IndexOutOfBoundsException()")
     void setCheckRange() {
         linkedList.clear();
-        System.out.println(linkedList.size());
         Exception exception = assertThrows(
                 IndexOutOfBoundsException.class,
                 () -> linkedList.set(0, 0));

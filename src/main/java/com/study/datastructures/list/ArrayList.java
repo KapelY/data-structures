@@ -33,9 +33,9 @@ public class ArrayList<T> implements List<T> {
     @Override
     public void add(T value, int index) {
         checkCapacity();
-        addCheckRange(index);
+        checkRangeForAdd(index);
 
-        if (size - index >= 0) {
+        if (index < size) {
             System.arraycopy(array, index, array, index + 1, size - index);
         }
 
@@ -47,12 +47,11 @@ public class ArrayList<T> implements List<T> {
     public T remove(int index) {
         checkRange(index, EXCEPTION_REMOVE_VALUE);
         T oldObject = array[index];
-        size -= 1;
-        if (size - index >= 0) {
+        if (size > index) {
             System.arraycopy(array, index + 1, array, index, size - index);
         }
         array[size] = null;
-
+        size--;
         return oldObject;
     }
 
@@ -72,7 +71,7 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public void clear() {
-        for (int i = 0; i < size - 1; i++) {
+        for (int i = 0; i < size; i++) {
             array[i] = null;
         }
         size = 0;
@@ -90,12 +89,7 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public boolean contains(T value) {
-        for (T i : array) {
-            if (i == value) {
-                return true;
-            }
-        }
-        return false;
+        return indexOf(value) != -1;
     }
 
     @Override
@@ -110,7 +104,7 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public int lastIndexOf(T value) {
-        for (int j = array.length - 1; j > -1; j--) {
+        for (int j = array.length - 1; j >= 0; j--) {
             if (array[j] == value) {
                 return j;
             }
@@ -129,7 +123,7 @@ public class ArrayList<T> implements List<T> {
 
     private void checkCapacity() {
         if (size == array.length) {
-            array = Arrays.copyOf(array, (int) (array.length * 1.5));
+            array = Arrays.copyOf(array, size * 3 / 2 + 1);
         }
     }
 
@@ -139,7 +133,7 @@ public class ArrayList<T> implements List<T> {
         }
     }
 
-    private void addCheckRange(int index) {
+    private void checkRangeForAdd(int index) {
         if (index > size || index < 0) {
             throw new IndexOutOfBoundsException(EXCEPTION_ADD_VALUE);
         }
