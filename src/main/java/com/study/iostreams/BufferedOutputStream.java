@@ -1,13 +1,11 @@
 package com.study.iostreams;
 
-public class BufferedOutputStream implements Write{
-    @Override
-    public void write(int data) {
+import java.io.IOException;
+import java.io.OutputStream;
 
-    }
-
+public class BufferedOutputStream extends OutputStream {
     @Override
-    public void close() {
+    public void write(int b) throws IOException {
 
     }
 }
