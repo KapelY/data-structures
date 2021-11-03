@@ -11,7 +11,7 @@ public class Client {
             };
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Print 8 chars: ");
+            System.out.println("Print some: ");
             char[] chars;
             int countInput;
             int countFromServer;

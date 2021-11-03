@@ -1,4 +1,4 @@
-package com.study.echoserver.iostream;
+package com.study.echoserver.multithreading;
 
 import java.io.*;
 import java.net.Socket;

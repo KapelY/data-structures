@@ -14,11 +14,12 @@ public class Server {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
             String echo;
-            while (!((echo = reader.readLine()).isEmpty())) {
+            do {
+                echo = reader.readLine();
                 writer.write("Echo: " + echo);
                 writer.newLine();
                 writer.flush();
-            }
+            } while (!echo.contains("bye"));
             reader.close();
             writer.close();
         } catch (IOException e) {
