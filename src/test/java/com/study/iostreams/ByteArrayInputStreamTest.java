@@ -1,27 +1,25 @@
 package com.study.iostreams;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ByteArrayInputStreamTest {
     private final String STREAM_CLOSED = "Stream is dead";
-    private final InputStream emptyStream = new ByteArrayInputStream(new byte[0]);
-    private final InputStream oneElemStream = new ByteArrayInputStream(new byte[]{1});
-    private final InputStream twoElemStream = new ByteArrayInputStream(new byte[]{1, 2});
-    private final InputStream threeElemStream = new ByteArrayInputStream(new byte[]{1, 2, 3});
-    private final InputStream fiveElemStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
+    private final ByteArrayInputStream emptyStream = new ByteArrayInputStream(new byte[0]);
+    private final ByteArrayInputStream oneElemStream = new ByteArrayInputStream(new byte[]{1});
+    private final ByteArrayInputStream twoElemStream = new ByteArrayInputStream(new byte[]{1, 2});
+    private final ByteArrayInputStream threeElemStream = new ByteArrayInputStream(new byte[]{1, 2, 3});
+    private final ByteArrayInputStream fiveElemStream = new ByteArrayInputStream(new byte[]{1, 2, 3, 4, 5});
 
 
     @Test
     @DisplayName("When call read on closed stream IOException is thrown")
-    void whenCallReadOnClosedStreamIoExceptionIsThrown() throws IOException {
+    void whenCallReadOnClosedStreamIoExceptionIsThrown() {
         emptyStream.close();
         Throwable exception = assertThrows(IOException.class, emptyStream::read);
         assertEquals(exception.getMessage(), STREAM_CLOSED);
@@ -29,7 +27,7 @@ class ByteArrayInputStreamTest {
 
     @Test
     @DisplayName("When call available on empty stream, stream with 1 elem, 2 elem, 3 elem")
-    void whenCallAvailableOnEmptyStreamStreamWith1Elem2Elem3Elem() throws IOException {
+    void whenCallAvailableOnEmptyStreamStreamWith1Elem2Elem3Elem() {
         assertEquals(0, emptyStream.available());
         assertEquals(1, oneElemStream.available());
         assertEquals(2, twoElemStream.available());
