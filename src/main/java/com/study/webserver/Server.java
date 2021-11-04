@@ -5,16 +5,17 @@ import lombok.Data;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 @Data
 public class Server {
     private static final String EXCEPTION_IN_STREAM = "Something went wrong in 'readContent(String path)')!";
     int port;
     String webappPath;
-    static char[] array = new char[999];
+    static byte[] array = new byte[999];
 
     static int readContent(String path) {
-        try (var bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(path)))) {
+        try (var bufferedReader =new FileInputStream(path)) {
             return bufferedReader.read(array);
         } catch (IOException e) {
             throw new RuntimeException(EXCEPTION_IN_STREAM, e);
@@ -28,7 +29,7 @@ public class Server {
                 for (;;) {
                     try (Socket socket = serverSocket.accept();
                          BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+                         OutputStream writer = socket.getOutputStream()) {
                         String uri;
 
                     StringBuilder sb = new StringBuilder();
@@ -44,9 +45,9 @@ public class Server {
                     int count = readContent(path);
                     System.out.println(array);
 
-                    writer.write("HTTP/1.1 200 OK");
-                    writer.newLine();
-                    writer.newLine();
+                    writer.write("HTTP/1.1 200 OK".getBytes(StandardCharsets.UTF_8));
+                    writer.write(System.getProperty("line.separator").getBytes(StandardCharsets.UTF_8));
+                    writer.write(System.getProperty("line.separator").getBytes(StandardCharsets.UTF_8));
                     writer.write(array, 0, count);
                     writer.flush();
                     System.out.println("written");
