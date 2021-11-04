@@ -27,6 +27,7 @@ class HashMapTest {
         map.put("1", "11");
         map.put("1", "12");
         map.put("1", "13");
+        System.out.println(map);
     }
 
     @Test
@@ -46,6 +47,7 @@ class HashMapTest {
         map.put("2", "12");
         map.put("3", "13");
         assertEquals("14", map.put("4", "14"));
+        System.out.println(map);
         assertEquals("11", map.get("1"));
         assertEquals("14", map.get("4"));
     }
@@ -57,11 +59,13 @@ class HashMapTest {
         map.put("2", "12");
         map.put("3", "12");
         assertEquals(3, map.size());
-        map.put("1", "11");
-        map.put("1", "12");
+//        map.put("1", "11");
+//        map.put("1", "12");
         map.put("1", "13");
-        map.put("2", "12");
-        map.put("3", "12");
+//        map.put("2", "12");
+//        map.put("3", "12");
+        System.out.println(map);
+        System.out.println(map.size());
         assertEquals(3, map.size());
     }
 
@@ -81,13 +85,13 @@ class HashMapTest {
         map.put("2", "12");
         assertEquals(2, map.size());
         assertEquals(
-                "[[HashMap.Entry(key=2, value=12)], " +
-                        "[HashMap.Entry(key=1, value=11)]]",
+                "[HashMap.Entry(key=2, value=12), " +
+                        "HashMap.Entry(key=1, value=11)]",
                 map.toString());
         assertEquals("12", map.remove("2"));
         assertEquals(1, map.size());
         assertEquals(
-                "[[HashMap.Entry(key=1, value=11)]]",
+                "[HashMap.Entry(key=1, value=11)]",
                 map.toString());
     }
 
@@ -102,7 +106,7 @@ class HashMapTest {
     @DisplayName("When call iter over the map, then correct data is shown")
     void whenCallIterOverTheMapThenCorrectDataIsShown() {
         map.put("1", "A");
-        final Iterator<HashMap.Entry<String, String>> iterator = map.iterator();
+        final Iterator<Map.Entry<String, String>> iterator = map.iterator();
         assertThat(iterator.next(), is(new HashMap.Entry<>("1", "A")));
     }
 
@@ -110,7 +114,7 @@ class HashMapTest {
     @DisplayName("When call 'iterator.remove()', then the entry removed")
     void whenCallIteratorRemoveThenTheEntryRemoved() {
         map.put("1", "A");
-        final Iterator<HashMap.Entry<String, String>> iterator = map.iterator();
+        final Iterator<Map.Entry<String, String>> iterator = map.iterator();
         iterator.next();
         iterator.remove();
         assertThat(map.size(), is(0));
@@ -124,7 +128,7 @@ class HashMapTest {
         map.put("1", "11");
         map.put("2", "22");
         map.put("3", "33");
-        Iterator<HashMap.Entry<String, String>> iterator = map.iterator();
+        Iterator<Map.Entry<String, String>> iterator = map.iterator();
         Exception exception = assertThrows(
                 IllegalStateException.class,
                 iterator::remove);
@@ -136,7 +140,7 @@ class HashMapTest {
     @DisplayName("When call 'iterator.next' on empty list, then thrown NoSuchElementException")
     void whenCall() {
         map.clear();
-        Iterator<HashMap.Entry<String, String>> iterator = map.iterator();
+        Iterator<Map.Entry<String, String>> iterator = map.iterator();
         assertThrows(
                 NoSuchElementException.class,
                 iterator::next);

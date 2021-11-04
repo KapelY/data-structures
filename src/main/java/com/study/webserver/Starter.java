@@ -2,7 +2,7 @@ package com.study.webserver;
 
 public class Starter {
     public static void main(String[] args) {
-        Server server = new Server();
+        ServerWithInfiniteLoop server = new ServerWithInfiniteLoop();
         server.setPort(3000);
         server.setWebappPath("src/main/resources/webapp");
         server.start();

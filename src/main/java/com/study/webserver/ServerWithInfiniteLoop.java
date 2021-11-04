@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 @Data
-public class Server {
+public class ServerWithInfiniteLoop {
     private static final String EXCEPTION_IN_STREAM = "Something went wrong in 'readContent(String path)')!";
     static byte[] array = new byte[999];
     int port;

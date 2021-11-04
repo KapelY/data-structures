@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server1 {
+public class ServerSimple {
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(3000)) {
             System.out.println(" === Server start to work === ");
