@@ -1,5 +1,6 @@
 package com.study.webserver;
 
+import com.study.iostreams.BufferedOutputStream;
 import lombok.Data;
 
 import java.io.*;
@@ -29,7 +30,7 @@ public class Server {
             for (; ; ) {
                 try (Socket socket = serverSocket.accept();
                      BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                     OutputStream writer = socket.getOutputStream()) {
+                     OutputStream writer = new BufferedOutputStream(socket.getOutputStream())) {
 
                     StringBuilder sb = new StringBuilder();
                     String line;
@@ -38,7 +39,7 @@ public class Server {
                     }
                     String uri = sb.toString().split(" ")[1];
                     String path = webappPath + uri;
-                    System.out.println("Ready to write response " + path);
+                    System.out.print("Ready to write response " + path + " -> ");
 
                     if (!new File(path).exists()) {
                         writeHeader(writer);

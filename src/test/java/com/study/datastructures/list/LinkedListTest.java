@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LinkedListTest {
-    LinkedList linkedList = new LinkedList();
+    LinkedList<String> linkedList = new LinkedList<>();
 
     @BeforeEach
     void setUp() {
@@ -129,10 +129,10 @@ class LinkedListTest {
     @Test
     void set() {
         linkedList.add("1");
-        assertEquals("1", linkedList.set(2, 0));
+        assertEquals("1", linkedList.set("2", 0));
         linkedList.add("3");
         linkedList.add("4");
-        assertEquals("4", linkedList.set(0, 2));
+        assertEquals("4", linkedList.set("0", 2));
     }
 
     @Test
@@ -202,7 +202,7 @@ class LinkedListTest {
         linkedList.add("A");
         linkedList.add("B");
         linkedList.add("C");
-        Iterator iterator = linkedList.iterator();
+        Iterator<String> iterator = linkedList.iterator();
         assertEquals("A", iterator.next());
         assertEquals("B", iterator.next());
         assertEquals("C", iterator.next());
@@ -211,10 +211,10 @@ class LinkedListTest {
     @Test
     @DisplayName("When call 'iterator.next' on empty list, then thrown NoSuchElementException")
     void expectedNoSuchElementException() {
-        Iterator iterator = linkedList.iterator();
+        Iterator<String> iterator = linkedList.iterator();
         assertThrows(
                 NoSuchElementException.class,
-                () -> iterator.next());
+                iterator::next);
     }
 
     @Test
@@ -222,10 +222,10 @@ class LinkedListTest {
             "then custom exception mustBe thrown ")
     void whenCallIteratorRemoveWithoutCallingIteratorNextBeforeThenCustomExceptionMustBeThrown() {
         linkedList.add("!");
-        Iterator iterator = linkedList.iterator();
+        Iterator<String> iterator = linkedList.iterator();
         Exception exception = assertThrows(
                 IllegalStateException.class,
-                () -> iterator.remove());
+                iterator::remove);
 
         assertTrue(exception.getMessage().contains(EXCEPTION_REMOVE_ITERATOR));
     }
@@ -236,7 +236,7 @@ class LinkedListTest {
         linkedList.add("A");
         linkedList.add("B");
         linkedList.add("C");
-        Iterator iterator = linkedList.iterator();
+        Iterator<String> iterator = linkedList.iterator();
         assertThat(iterator.next(), is("A"));
         iterator.remove();
         assertThat(iterator.next(), is("B"));
@@ -247,7 +247,7 @@ class LinkedListTest {
         iterator = linkedList.iterator();
         assertThat(iterator.next(), is("A"));
         iterator.remove();
-        assertEquals(false, iterator.hasNext());
+        assertFalse(iterator.hasNext());
     }
 
     @Test
@@ -256,7 +256,7 @@ class LinkedListTest {
         linkedList.add("A");
         linkedList.add("B");
         linkedList.add("C");
-        Iterator iterator = linkedList.iterator();
+        Iterator<String> iterator = linkedList.iterator();
         assertThat(iterator.next(), is("A"));
         assertThat(iterator.next(), is("B"));
         assertThat(iterator.next(), is("C"));
@@ -270,7 +270,7 @@ class LinkedListTest {
         linkedList.add("A");
         linkedList.add("B");
         linkedList.add("C");
-        Iterator iterator = linkedList.iterator();
+        Iterator<String> iterator = linkedList.iterator();
         assertThat(iterator.next(), is("A"));
         assertThat(iterator.next(), is("B"));
         iterator.remove();
@@ -282,7 +282,7 @@ class LinkedListTest {
     void whenSizeMoreThan10() {
         linkedList.clear();
         for (int i = 0; i < 11; i++) {
-            linkedList.add(i);
+            linkedList.add(String.valueOf(i));
         }
 
         assertEquals(11, linkedList.size());
@@ -327,7 +327,7 @@ class LinkedListTest {
         linkedList.clear();
         Exception exception = assertThrows(
                 IndexOutOfBoundsException.class,
-                () -> linkedList.set(0, 0));
+                () -> linkedList.set("0", 0));
 
         assertTrue(exception.getMessage().contains(EXCEPTION_SET_VALUE));
     }
