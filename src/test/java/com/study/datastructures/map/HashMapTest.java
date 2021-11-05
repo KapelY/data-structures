@@ -85,13 +85,13 @@ class HashMapTest {
         map.put("2", "12");
         assertEquals(2, map.size());
         assertEquals(
-                "[HashMap.Entry(key=2, value=12), " +
-                        "HashMap.Entry(key=1, value=11)]",
+                "[Entry(key=2, value=12), " +
+                        "Entry(key=1, value=11)]",
                 map.toString());
         assertEquals("12", map.remove("2"));
         assertEquals(1, map.size());
         assertEquals(
-                "[HashMap.Entry(key=1, value=11)]",
+                "[Entry(key=1, value=11)]",
                 map.toString());
     }
 
@@ -107,7 +107,7 @@ class HashMapTest {
     void whenCallIterOverTheMapThenCorrectDataIsShown() {
         map.put("1", "A");
         final Iterator<Map.Entry<String, String>> iterator = map.iterator();
-        assertThat(iterator.next(), is(new HashMap.Entry<>("1", "A")));
+        assertEquals(iterator.next().toString(), new HashMap.Entry<>("1", "A").toString());
     }
 
     @Test

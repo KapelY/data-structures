@@ -165,15 +165,29 @@ public class HashMap<K, V> implements Map<K, V> {
         return new HashMapIterator();
     }
 
+
     @Data
-    @AllArgsConstructor
     public static class Entry<K, V> implements Map.Entry<K, V> {
         private final K key;
+        private final int hash;
         private V value;
+        private Entry<K, V> next;
+
+        public Entry(K key, V value) {
+            this.key = key;
+            this.value = value;
+            hash = this.hashCode();
+        }
 
         @Override
-        public void setValue(V value) {
-            this.value = value;
+        public int hashCode() {
+            return key.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return "Entry(key=" + key + ", " +
+                    "value=" + value + ")";
         }
     }
 
