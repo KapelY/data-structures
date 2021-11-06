@@ -13,7 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
-class HashMapTest {
+class HashMapIT {
     private final Map<String, String> map = new HashMap<>();
 
     @BeforeEach
@@ -25,9 +25,14 @@ class HashMapTest {
     @DisplayName("When call 'put(key, value)' for the first time))")
     void put() {
         map.put("1", "11");
-        map.put("1", "12");
-        map.put("1", "13");
-        System.out.println(map);
+        map.put("2", "12");
+        map.put("3", "13");
+        map.put("4", "14");
+        map.put("5", "15");
+        map.put("6", "16");
+        map.put("7", "17");
+        map.put("8", "18");
+        map.put("9", "19");
     }
 
     @Test
@@ -47,7 +52,6 @@ class HashMapTest {
         map.put("2", "12");
         map.put("3", "13");
         assertEquals("14", map.put("4", "14"));
-        System.out.println(map);
         assertEquals("11", map.get("1"));
         assertEquals("14", map.get("4"));
     }
@@ -59,13 +63,11 @@ class HashMapTest {
         map.put("2", "12");
         map.put("3", "12");
         assertEquals(3, map.size());
-//        map.put("1", "11");
-//        map.put("1", "12");
+        map.put("1", "11");
+        map.put("1", "12");
         map.put("1", "13");
-//        map.put("2", "12");
-//        map.put("3", "12");
-        System.out.println(map);
-        System.out.println(map.size());
+        map.put("2", "12");
+        map.put("3", "12");
         assertEquals(3, map.size());
     }
 
@@ -82,17 +84,33 @@ class HashMapTest {
     @DisplayName("When call 'toString()'")
     void whenCallToString() {
         map.put("1", "11");
+        assertEquals("[1=11]", map.toString());
         map.put("2", "12");
         assertEquals(2, map.size());
-        assertEquals(
-                "[Entry(key=2, value=12), " +
-                        "Entry(key=1, value=11)]",
-                map.toString());
+        assertEquals("[2=12, " + "1=11]", map.toString());
         assertEquals("12", map.remove("2"));
         assertEquals(1, map.size());
-        assertEquals(
-                "[Entry(key=1, value=11)]",
-                map.toString());
+        assertEquals("[1=11]", map.toString());
+    }
+
+    @Test
+    @DisplayName("When call remove up to 1 elem left in map")
+    void whenCallRemoveUpTo1ElemLeftInMap() {
+        map.put("1", "11");
+        map.put("2", "12");
+        map.put("3", "13");
+        map.put("4", "14");
+        map.put("5", "15");
+        map.put("6", "16");
+        map.put("7", "17");
+        assertEquals(7, map.size());
+        assertEquals("12", map.remove("2"));
+        assertEquals("13", map.remove("3"));
+        assertEquals("16", map.remove("6"));
+        assertEquals("11", map.remove("1"));
+        assertEquals("17", map.remove("7"));
+        assertNull(map.remove("7"));
+        assertEquals(2, map.size());
     }
 
     @Test
@@ -107,7 +125,7 @@ class HashMapTest {
     void whenCallIterOverTheMapThenCorrectDataIsShown() {
         map.put("1", "A");
         final Iterator<Map.Entry<String, String>> iterator = map.iterator();
-        assertEquals(iterator.next().toString(), new HashMap.Entry<>("1", "A").toString());
+        assertEquals(iterator.next().toString(), "1=A");
     }
 
     @Test
@@ -144,13 +162,12 @@ class HashMapTest {
         assertThrows(
                 NoSuchElementException.class,
                 iterator::next);
-
     }
 
     @Test
     @DisplayName("When size > 75% of map capacity then allocates new Map with new capacity * 2")
     void whenSize75OfMapCapacityThenAllocatesNewMapWithNewCapacity2() {
-        HashMap<Integer, Integer> hashMap= new HashMap<>(4);
+        HashMap<Integer, Integer> hashMap = new HashMap<>(4);
         hashMap.put(1, 1);
         hashMap.put(2, 1);
         hashMap.put(3, 1);
@@ -160,7 +177,7 @@ class HashMapTest {
         hashMap.put(5, 1);
         hashMap.put(6, 1);
         assertEquals(8, hashMap.capacity());
-        hashMap.put(1,1);
+        hashMap.put(1, 1);
         assertEquals(16, hashMap.capacity());
     }
 }
