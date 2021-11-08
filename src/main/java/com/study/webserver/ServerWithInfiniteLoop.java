@@ -35,13 +35,13 @@ public class ServerWithInfiniteLoop {
                     StringBuilder sb = new StringBuilder();
                     String line;
                     while (!(line = reader.readLine()).isEmpty()) {
-                        sb.append(line).append(System.getProperty("line.separator"));
+                        sb.append(line).append(System.lineSeparator());
                     }
                     String uri = sb.toString().split(" ")[1];
                     String path = webappPath + uri;
                     System.out.print("Ready to write response " + path + " -> ");
 
-                    if (!new File(path).exists()) {
+                    if (!new File(path).exists() || new File(path).isDirectory()) {
                         writeHeader(writer);
                         writer.write("Error 404 file not found".getBytes(StandardCharsets.UTF_8));
                         writer.flush();
