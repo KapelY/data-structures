@@ -8,7 +8,7 @@ public class Server {
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(3000)) {
             System.out.println("Server started main Thread name: " + Thread.currentThread().getName());
-            while (true) {
+            while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
 
                 new Thread(() -> {
