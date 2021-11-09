@@ -41,7 +41,7 @@ public class Handler extends Thread {
             if (!client.userName.equals(userName)) {
                 try {
                     client.bufferedWriter.write(message);
-                    client.bufferedWriter.write(System.lineSeparator());
+                    client.bufferedWriter.write("\r\n");
                     client.bufferedWriter.flush();
                 } catch (IOException e) {
                     e.printStackTrace();

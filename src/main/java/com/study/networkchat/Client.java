@@ -32,7 +32,7 @@ public class Client {
             while (socket.isConnected()) {
                 String messageToSend = reader.readLine();
                 bufferedWriter.write(userName + ": " + messageToSend);
-                bufferedWriter.newLine();
+                bufferedWriter.write("\r\n");
                 bufferedWriter.flush();
             }
         } catch (IOException e) {
@@ -56,7 +56,7 @@ public class Client {
 
     private void writeMessage(String message) throws IOException {
         bufferedWriter.write(message);
-        bufferedWriter.newLine();
+        bufferedWriter.write("\r\n");
         bufferedWriter.flush();
     }
 
