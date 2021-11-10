@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.net.Socket;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Objects;
 
 @Slf4j
@@ -11,6 +14,7 @@ public class Client {
     static final String EXIT = "exit";
     private static final String ENTER_NAME = "Your name please: ";
     private static final String INVALID_NAME = "Invalid name, try again!!! ";
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final Socket socket;
     private final String userName;
     private BufferedReader bufferedReader;
@@ -46,7 +50,7 @@ public class Client {
 
     private void massageSender() {
         try {
-            sendMessage(userName);
+            sendMessageName(userName);
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String messageToSend;
             while (!(messageToSend = reader.readLine()).contains(EXIT)) {
@@ -79,7 +83,13 @@ public class Client {
     }
 
     private void sendMessage(String messageToSend) throws IOException {
-        bufferedWriter.write(userName + ": " + messageToSend);
+        bufferedWriter.write(dateTimeFormatter.format(LocalTime.now()) + " " + userName + ": " + messageToSend);
+        bufferedWriter.write("\r\n");
+        bufferedWriter.flush();
+    }
+
+    private void sendMessageName(String userName) throws IOException {
+        bufferedWriter.write(userName);
         bufferedWriter.write("\r\n");
         bufferedWriter.flush();
     }

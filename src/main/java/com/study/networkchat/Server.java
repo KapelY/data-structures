@@ -11,7 +11,7 @@ public class Server {
     private static final String SERVER_STARTED = "----====SERVER STARTED====----";
     private static final String NEW_CLIENT_CONNECTED = "New client connected";
     private final int port;
-    private  volatile SocketPool socketPool;
+    private final SocketPool socketPool;
 
     public Server(int port) {
         this.port = port;
