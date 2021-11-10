@@ -1,29 +1,42 @@
 package com.study.networkchat;
 
-import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-@AllArgsConstructor
+@Slf4j
 public class Server {
-    int port;
+    private static final String SERVER_STARTED = "----====SERVER STARTED====----";
+    private static final String NEW_CLIENT_CONNECTED = "New client connected";
+    private final int port;
+    private  volatile SocketPool socketPool;
+
+    public Server(int port) {
+        this.port = port;
+        socketPool = new SocketPool();
+    }
 
     public void startServer() {
-        try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            System.out.println("----====SERVER STARTED====----");
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
 
-            while (!serverSocket.isClosed()) {
+            startHandler();
+            log.info(SERVER_STARTED);
+
+            while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println("New client in the room");
-                Handler handler = new Handler(socket);
-                handler.start();
+                log.info(NEW_CLIENT_CONNECTED);
+                socketPool.addSocket(socket);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error in server start method. ", e);
         }
+    }
+
+    private void startHandler() {
+        Thread handler = new Thread(new Handler(socketPool));
+        handler.start();
     }
 
     public static void main(String[] args) {

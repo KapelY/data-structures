@@ -1,13 +1,20 @@
 package com.study.networkchat;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.*;
 import java.net.Socket;
+import java.util.Objects;
 
+@Slf4j
 public class Client {
-    Socket socket;
+    static final String EXIT = "exit";
+    private static final String ENTER_NAME = "Your name please: ";
+    private static final String INVALID_NAME = "Invalid name, try again!!! ";
+    private final Socket socket;
+    private final String userName;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
-    private String userName;
 
     public Client(Socket socket, String userName) {
         this.socket = socket;
@@ -16,69 +23,72 @@ public class Client {
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException e) {
+            log.error("Error in constructor Client.", e);
             close();
-        }
-    }
-
-    public void start() {
-        messageListener();
-        massageSender();
-    }
-
-    private void massageSender() {
-        try {
-            writeMessage(userName);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            while (socket.isConnected()) {
-                String messageToSend = reader.readLine();
-                bufferedWriter.write(userName + ": " + messageToSend);
-                bufferedWriter.write("\r\n");
-                bufferedWriter.flush();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            close();
-        }
-    }
-
-    private void messageListener() {
-        new Thread(() -> {
-            while (socket.isConnected()) {
-                try {
-                    System.out.println(bufferedReader.readLine());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    close();
-                }
-            }
-        }).start();
-    }
-
-    private void writeMessage(String message) throws IOException {
-        bufferedWriter.write(message);
-        bufferedWriter.write("\r\n");
-        bufferedWriter.flush();
-    }
-
-    private void close() {
-        try {
-            bufferedWriter.close();
-            bufferedWriter.close();
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String name;
-        System.out.println("You nick please: ");
+        System.out.println(ENTER_NAME);
         while ((name = reader.readLine()).isBlank() || name.isEmpty()) {
-            System.out.println("Invalid name, try again!!! ");
+            System.out.println(INVALID_NAME);
         }
         Client client = new Client(new Socket("127.0.0.1", 3000), name);
         client.start();
     }
 
+    public void start() {
+        new Thread(messageListener()).start();
+        massageSender();
+    }
+
+    private void massageSender() {
+        try {
+            sendMessage(userName);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String messageToSend;
+            while (!(messageToSend = reader.readLine()).contains(EXIT)) {
+                sendMessage(messageToSend);
+            }
+        } catch (IOException e) {
+            log.error("Error in send message Client.", e);
+        } finally {
+            try {
+                sendMessage(EXIT);
+            } catch (IOException e) {
+                log.error("Error in finally send message Client.", e);
+            }
+        }
+    }
+
+    private Runnable messageListener() {
+        return () -> {
+            String message = "";
+            while (!Objects.equals(message, Handler.BYE_FROM_SERVER)) {
+                try {
+                    message = bufferedReader.readLine();
+                    System.out.println(message);
+                } catch (IOException e) {
+                    log.info("In message listener error on readline client class", e);
+                }
+            }
+            close();
+        };
+    }
+
+    private void sendMessage(String messageToSend) throws IOException {
+        bufferedWriter.write(userName + ": " + messageToSend);
+        bufferedWriter.write("\r\n");
+        bufferedWriter.flush();
+    }
+
+    private void close() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            log.error("Error in close socket Client.", e);
+        }
+    }
 }
