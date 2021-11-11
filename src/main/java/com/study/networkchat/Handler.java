@@ -3,13 +3,11 @@ package com.study.networkchat;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
 @Slf4j
 public class Handler implements Runnable {
     static final String BYE_FROM_SERVER = "SERVER: Bye see you!";
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final SocketPool socketPool;
 
     public Handler(SocketPool socketPool) {
@@ -54,7 +52,7 @@ public class Handler implements Runnable {
             try {
                 Thread.sleep(300);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("Thread sleep call in Handler.", e);
             }
         }
     }

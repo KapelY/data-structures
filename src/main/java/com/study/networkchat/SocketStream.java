@@ -1,11 +1,13 @@
 package com.study.networkchat;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.net.Socket;
 
 @Data
+@Slf4j
 public class SocketStream {
     private Socket socket;
     private BufferedReader reader;
@@ -22,7 +24,7 @@ public class SocketStream {
         try {
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error in SocketStream close method.", e);
         }
     }
 }
